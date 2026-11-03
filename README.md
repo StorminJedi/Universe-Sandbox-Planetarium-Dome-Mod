@@ -1,5 +1,7 @@
 # US2Dome - Planetarium Dome Mod for Universe Sandbox 2
 
+> !!!!!DISCLAIMER!!!!! THE MAJORITY OF THIS PROJECT WAS CREATED USING A LOCAL AI AGENT AND SOME HELP FROM CLAUDE!!! I had access to a planetarium and really wanted to use Universe Sandbox on it, but there was no native way to render for a dome, unlike some other software like Space Engine. I wish I understood more how the mod works, but I'm not going to dedicate dozens if not hundreds of hours to a project that equates to a gimmick. I do NOT have the time to work on a project like this, nor do I have the money to pay someone talented to make it for me. If someone ever DOES want to make a Planetarium Mod by hand, I will happily add a link to it here. Until that happens, this is the only mod in the world for this game that will render for a planetarium. If you do not want a mod that was created with the help of AI, this is not the mod for you, and good luck finding a planetarium mod elsewhere.
+
 A [BepInEx 5](https://github.com/BepInEx/BepInEx) plugin for **Universe Sandbox 2** that renders the game as a
 **180-degree fisheye (equidistant) dome image** and shows it in its own window, ready to project onto a planetarium dome.
 You keep playing in the normal game window; a second window shows the live dome.
