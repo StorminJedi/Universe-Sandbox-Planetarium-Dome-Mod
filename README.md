@@ -1,172 +1,193 @@
-# US2Dome — Universe Sandbox 2 Planetarium Dome Mod
+# US2Dome - Planetarium Dome Mod for Universe Sandbox 2
 
-A BepInEx 5 mod for **Universe Sandbox 2** that renders the game scene as a
-**180° fisheye / equidistant planetarium-dome image** (a circular image) so you
-can **project the game onto a planetarium dome**.
+A [BepInEx 5](https://github.com/BepInEx/BepInEx) plugin for **Universe Sandbox 2** that renders the game as a
+**180-degree fisheye (equidistant) dome image** and shows it in its own window, ready to project onto a planetarium dome.
+You keep playing in the normal game window; a second window shows the live dome.
 
-```
-          180° equidistant (fisheye) output
-        .-'''''''''''-.
-      /  sky, stars,   \
-     |    planets, sun  |
-      \   and space     /
-        '-.,,,,,,,'.-'
-          (circular image on black)
-```
+On top of the dome picture the mod can place game windows (planet properties, the 3D object view, Data Views) and
+planet labels at positions you choose on the dome, so they stay readable on the curved screen.
 
-The mod captures the current game view from **5 face cameras** (front / right /
-left / up / down), each covering a 90° square, and remaps them into a single
-180° equidistant dome using the validated math in `src/DomeMath.cs`.
 
-## What you get
-- A **SEPARATE OS window** that shows the live dome (**default, recommended**).
-  The main game window stays normal — you navigate in the game, and a second
-  window shows the 180° planetarium view, ready to project or record.
-  - The dome is **always drawn as a perfect circle**: the window is painted
-    black and the dome blitted into a **centered square of the smaller
-    dimension**, so resizing or going **fullscreen** (16:9, 21:9, …) adds
-    black bars instead of stretching it into an oval.
-  - The dome is **correctly oriented** (matches the in-game preview).
-- A **live circular dome preview** overlay in the game (optional; auto-hides
-  while the second window is open — see `HideOverlayWhenSecondWindowActive`).
-- A **Full-Dome Mode** that fills the whole *game* screen with the circular dome
-  on a black background (also letterboxed to a circle) — so you can **project
-  the game window directly** onto the dome.
-- A **"Save PNG"** button that exports the dome image (circular, black
-  corners) to `US2Dome/US2Dome_<timestamp>.png` next to the game.
-- Config options for resolution, capture rate, overlay size/position,
-  full-dome mode, and the second window.
+## Features
 
-> **Recommended workflow:** keep `SecondWindow = true` (default),
-> `HideOverlayWhenSecondWindowActive = true` (default), `FullDomeMode = false`.
-> Play the game normally in its window; a second window titled *"US2Dome -
-> 180° Planetarium"* shows the live dome as a clean circle. Make that window
-> whatever size you like — even fullscreen — and the dome stays circular (black
-> bars fill the rest). Move the game window around and the dome window follows
-> your camera automatically.
+- **Second dome window** (separate OS window). Always a perfect circle: black bars fill the rest, so a 16:9 or 21:9
+  monitor, a projector, or fullscreen never stretches it into an oval. Remembers its position, supports fullscreen
+  (F11 or double-click in the dome window) and "always on top".
+- **Five-face capture** (front / right / left / up / down, 90 degrees each) remapped on the GPU into one 180-degree dome.
+- **Dome tilt and zoom**, adjustable live.
+- **Planet labels** redrawn on the dome (size, offset, distance adjustable).
+- **Game windows on the dome**, each with its own position, size and flip:
+  - the **planet properties window**
+  - its **3D object view**, which can stay in the properties window, become **its own window**, or be **removed**
+  - the **Data Views** window (graphs)
+- The windows are drawn **on top of everything** on the dome (sky, objects, orbit lines, grids, labels).
+- The windows follow the game window size and UI scale automatically: the captured area is computed from the window's
+  live on-screen rectangle divided by the current screen size, so changing monitor, resolution or window size is fine.
+- **In-game settings menu**: **F2** = simple menu, **Shift+F2** = full menu.
+- Optional in-game dome preview, full-dome mode (dome fills the game window), and a "Save PNG" button.
+- Optional log file (off by default).
 
 ## Requirements
-- Universe Sandbox 2 (the copy in `Universe_Sandbox_2/`)
-- **BepInEx 5.4.23.5** — already present in `BepInEx/core/`.
-- Windows. (The mod was compiled on Linux mono against the game's own
-  assemblies, so it targets the exact game build.)
+
+- **Windows** (the second window uses Win32/GDI).
+- **Universe Sandbox 2** (64-bit, Universal Render Pipeline build).
+- **BepInEx 5.4.x, x64** (developed against 5.4.23.5). BepInEx 6 is not supported.
 
 ## Install
-The plugin is **already installed** in this game copy:
+
+1. **Install BepInEx 5 (x64)** into the game folder, if it is not there already.
+   - Download `BepInEx_x64_5.4.x.zip` from the BepInEx releases page.
+   - Unzip it so that the `BepInEx` folder and `winhttp.dll` sit **next to the game's `.exe`**
+     (for example `...\steamapps\common\Universe Sandbox\`).
+   - Start the game once and close it. BepInEx creates `BepInEx\plugins`, `BepInEx\config`, etc.
+2. **Copy `US2Dome.dll`** (see *Build* below to make it) into:
+   ```
+   <game folder>\BepInEx\plugins\US2Dome.dll
+   ```
+3. **Start the game.** A second window titled *US2Dome - 180 Planetarium* appears showing the dome.
+   Press **F2** in the game window to open the settings.
+
+To update, close the game and overwrite `US2Dome.dll`. To uninstall, delete it (and optionally
+`BepInEx\config\US2Dome.cfg`).
+
+## Build
+
+The plugin is plain C# compiled with Mono's `mcs` against the game's own assemblies. All source files are in `src/`.
+
+### What you need
+- Mono (`mcs`), on Linux or Windows.
+- Reference DLLs, copied into a `refs/` folder next to the sources:
+
+| DLL | Where it comes from |
+|-----|---------------------|
+| `UnityEngine.dll`, `UnityEngine.CoreModule.dll`, `UnityEngine.IMGUIModule.dll`, `UnityEngine.ImageConversionModule.dll`, `UnityEngine.InputLegacyModule.dll`, `UnityEngine.TextRenderingModule.dll` | `<game>\Universe Sandbox x64_Data\Managed\` |
+| `netstandard_game.dll` | the game's `netstandard.dll` from the same `Managed` folder, renamed |
+| `BepInEx.dll`, `0Harmony.dll` | `<game>\BepInEx\core\` |
+
+Using the game's own DLLs makes the plugin match the exact game build.
+
+### Compile
+From the project folder (the one containing `src/` and `refs/`):
+
+```bash
+mkdir -p bin
+mcs -target:library -out:bin/US2Dome.dll \
+  -r:refs/netstandard_game.dll \
+  -r:refs/BepInEx.dll \
+  -r:refs/0Harmony.dll \
+  -r:refs/UnityEngine.CoreModule.dll \
+  -r:refs/UnityEngine.IMGUIModule.dll \
+  -r:refs/UnityEngine.ImageConversionModule.dll \
+  -r:refs/UnityEngine.InputLegacyModule.dll \
+  -r:refs/UnityEngine.TextRenderingModule.dll \
+  -r:refs/UnityEngine.dll \
+  src/DomeMath.cs src/DomeGpu.cs src/DomeWindow.cs src/US2Dome.cs src/US2DomeSettings.cs \
+  src/InputBlocker.cs src/UiDiag.cs src/Nameplates.cs src/WindowPos.cs src/WindowMirror.cs
 ```
-Universe_Sandbox_2/BepInEx/plugins/US2Dome.dll
-```
-Just launch the game. If you want a clean install / rebuild yourself, see
-`build.sh` (run on a machine with mono `mcs`):
-```
-./build.sh
-# copies bin/US2Dome.dll into the game's BepInEx/plugins/
-```
 
-To install into *your* copy of the game on Windows, simply copy
-`US2_mod/bin/US2Dome.dll` into `<game>/BepInEx/plugins/`.
+Or run `./build.sh`, which refreshes `refs/` from a sibling `Universe_Sandbox_2/` game folder if there is one, compiles,
+and copies the DLL into that game's `BepInEx/plugins/`.
 
-## Using it (in-game)
-1. Launch the game and go to the view you want to project.
-2. **Second window (default, recommended):** a second OS window titled
-   *"US2Dome - 180° Planetarium"* appears showing the live dome **as a circle**.
-   The game window stays completely normal — no overlay, no UI on the dome
-   (the in-game preview auto-hides while this window is open). Navigate the
-   game with the normal controls and the dome window tracks your camera every
-   frame. **Resize the window to any size or make it fullscreen** — the dome
-   stays a perfect circle (black bars fill the extra space, so a 16:9 or 21:9
-   window never stretches it into an oval). Move it to any monitor.
-3. **To save an image:** the in-game **Save PNG** button (shown with the
-   overlay) writes `US2Dome/US2Dome_<timestamp>.png` next to the game.
-4. **Alternative — project the game window directly:** set `FullDomeMode = true`
-   (see config) and the circular dome fills the whole game screen on black.
+Notes:
+- `DomeWorker.cs` and `DomeRemap.cs` are old CPU-remap code and are **not** part of the build.
+- The Universal Render Pipeline DLLs are not referenced; the mod reaches URP types through reflection.
+- Only the `mcs` build above has been used. Other compilers (Visual Studio, `dotnet`) need the same references and a
+  .NET Framework 4.x style target, and are untested.
 
-## In-game settings panel (v1.6.0)
-Press **F2** (change it in the panel or via `Controls/SettingsHotkey`) while the **game window** has focus to open a settings window on the game screen. It lists every config option, plus switches for **Enable the dome renderer** and **Dome window fullscreen**.
-- Most changes apply instantly (tilt, zoom, overlay, window on/off, fullscreen, always-on-top, capture rate).
-- Resolutions, face mipmaps and MSAA need a pipeline rebuild: change them, then click **Apply** (one rebuild for all).
-- Values are written to `US2Dome.cfg` when you close the panel or release the mouse.
-- Every slider (tilt, zoom, overlay size, second-window resolution) has a box next to it: click it, type an exact value (applies as you type, clamped to the slider range; window resolution accepts up to 8192), press Enter or Esc to leave. While a box has focus the game does not see your keystrokes.
-- The panel is drawn on the game window only; it never appears in the dome output.
-- Clicks, drags and scrolling on the panel are hidden from the game (Harmony patches on `UnityEngine.Input`, `src/InputBlocker.cs`). This works for the legacy Input API; the log line `Input systems loaded: ...` (written when the panel is first opened) tells you if the game also uses another input package.
+## Using it
 
-## Configuration (BepInEx config)
-Config file: `Universe_Sandbox_2/BepInEx/config/US2Dome.cfg`
+### Settings menu
+Press **F2** while the game window has focus.
 
-| Key                   | Default       | Meaning |
-|-----------------------|---------------|---------|
-| `Enabled`             | `true`        | Enable the dome renderer. |
-| `SettingsHotkey` (section `Controls`) | `F2` | Key that opens/closes the in-game settings panel. |
-| `Zoom`                | `1.0`         | 1.0 = true 180° dome. 2.0 = circle shows the central 90° (2x bigger), 3.0 = central 60°. Range 1-8. |
-| `DomeTiltDegrees`     | `40`          | Tilt of the dome relative to the game camera. |
-| `DomeResolution`      | `2048`        | Output square resolution (power of two). |
-| `FaceResolution`      | `1024`        | Per-face capture resolution. |
-| `CaptureEveryNFrames` | `3`           | Capture every N frames (1 = every frame). |
-| `ShowOverlay`         | `true`        | Show the small circular in-game preview (master switch). |
-| `OverlayScale`        | `0.35`        | Preview size (fraction of screen height). |
-| `OverlayAnchor`       | `BottomRight` | Preview position: TopLeft/TopRight/BottomLeft/BottomRight. |
-| `ShowSaveButton`      | `true`        | Show the Save PNG button (with the overlay). |
-| `FullDomeMode`        | `false`       | Fill the whole *game* screen with the circular dome (letterboxed; for projecting the game window). |
-| `SecondWindow`        | `true`        | **Show the live dome in a separate OS window** (recommended; game window stays normal). |
-| `SecondWindowResolution` | `1024`     | Dome size inside the second window (power of two). |
-| `SecondWindowTopmost` | `true`        | Keep the dome window above other windows. |
-| `HideOverlayWhenSecondWindowActive` | `true` | **Auto-hide the in-game preview while the second window is open.** Set `false` to keep both visible. (The overlay is your fallback: if the second window is closed/disabled, it comes back.) |
+- **F2** opens the **simple menu**: renderer on/off, dome window fullscreen, second window, tilt, labels, the game
+  window, the 3D object view, and Data Views.
+- **Shift+F2** opens the **full menu** (everything, including zoom, capture rate, preview overlay, quality/resolution,
+  Apply / Reset all to defaults, hotkey rebinding, and the **Make log file** switch).
+- Pressing the other combination while a menu is open switches to it. Pressing the same one closes it.
+- Every slider has a number box: click it, type an exact value, press Enter.
+- Changes apply immediately, except resolution, mipmaps and MSAA, which need **Apply** (full menu).
+- Settings are saved to `BepInEx\config\US2Dome.cfg` when you close the menu or release the mouse.
+- Mouse and keyboard input on the menu is hidden from the game.
 
-> Note: `SecondWindow` and `FullDomeMode` are independent. You can run both at
-> once if you want (game screen filled *and* a second window), but normally pick
-> one: second window for live navigation, full-dome mode for direct projection.
->
-> **Hiding the in-game preview:** with `HideOverlayWhenSecondWindowActive = true`
-> (default), the small corner preview disappears as soon as the second window is
-> showing the dome. If you ever want *no* preview at all (even when the second
-> window is off), set `ShowOverlay = false`. If you want the preview back
-> *together* with the second window, set `HideOverlayWhenSecondWindowActive = false`.
+### Placing windows on the dome
+Each window (properties, 3D view, Data Views) has:
 
-## How it works (URP)
-Universe Sandbox 2 uses the **Universal Render Pipeline (URP 14)**. Per the
-official URP 14 docs, an **enabled camera with `Camera.targetTexture` set
-renders to that RenderTexture automatically, before the screen camera** — no
-`Camera.Render()` needed (which is unreliable in URP). So:
+- **Angle from dome centre**: 0 = zenith (centre), 90 = horizon.
+- **Direction around the dome**: 0 = top of the image, 90 = right, 180 = bottom, -90 = left.
+- **Size**: how many degrees its longest side covers.
+- **Flip vertically**: use it if a window shows upside-down.
 
-1. The mod creates 5 enabled "face" cameras (front/right/left/up/down), each
-   with its own 512×512 RenderTexture, 90° FOV, square aspect.
-2. Each capture frame it repositions them to follow the main (scene) camera,
-   enables them, and lets URP render all 5 to their RTs.
-3. In `OnGUI` (which runs *after* the render phase) it reads the 5 RTs back to
-   the CPU, remaps every dome pixel to the correct face + UV via `DomeMath`,
-   and writes a square `Texture2D` (circular content, black corners).
-4. That texture is drawn as the overlay or full-screen dome, and can be
-   `EncodeToPNG()`-exported.
+The 3D object view has three modes: *Keep in properties window*, *Own window on the dome*, *Remove it*. The properties
+window on the dome shrinks when the 3D view is cut out of it, but its text stays the same size.
 
-## Files
-- `src/DomeMath.cs`   — Unity-independent, unit-tested 5-face → 180° equidistant math.
-- `src/DomeWindow.cs` — Windows-only helper that opens a second OS window and blits the dome into it (GDI).
-- `src/InputBlocker.cs` — hides panel clicks from the game.
-- `src/US2DomeSettings.cs` — the in-game settings panel (partial class of the plugin).
-- `src/US2Dome.cs`    — the BepInEx plugin (capture + remap + overlay + save + second window).
-- `bin/US2Dome.dll`   — the compiled plugin (installed into the game).
-- `build.sh`          — rebuild script (mono `mcs`).
-- `build_test/`       — dev/probe scripts (Cecil API checks, math test).
-- `archive/old/`      — obsolete single-file draft, kept for reference (not built).
+Windows only show on the dome while they are open in the game.
+
+### Labels
+Planet and object labels are redrawn on the dome. Size, X/Y offset and distance are adjustable. Distance also sets how
+far from the viewer the dome windows are placed.
+
+### Dome window
+- Move and resize it like any window. Drag it to the projector's screen and press **F11** (or double-click) for fullscreen.
+- The position is remembered between runs.
+
+## Configuration
+
+`BepInEx\config\US2Dome.cfg`, created on first run. Main sections:
+
+| Section | What it holds |
+|---------|---------------|
+| `General` | `Enabled`, `DomeTiltDegrees`, `Zoom`, `CaptureEveryNFrames`, resolutions, `SecondWindow*`, overlay and full-dome options, `RememberWindowPosition` |
+| `Quality` | `FaceMipmaps`, `FaceMSAA`, `FaceShadows`, `FacePostProcessing` |
+| `Controls` | `SettingsHotkey` (default `F2`) |
+| `Nameplates` | `ShowLabels`, `LabelSize`, `LabelOffsetX`, `LabelOffsetY`, `LabelDistance` |
+| `Window` | the properties window: `ShowWindow`, `WindowPath`, `AngleFromCenter`, `Direction`, `SizeDegrees`, `FlipVertical` |
+| `ObjectView` | the 3D view: `SeparateView`, `ShowSeparateView`, `ViewName`, position/size, `UseGameTexture`, `FlipVertical` |
+| `DataView` | the Data Views window: `ShowDataView`, `WindowPath`, position/size, `FlipVertical` |
+| `Logging` | `MakeLogFile` (default `false`) |
+| `Diagnostics` | `DumpKey` (F3), `HoverKey` (F4), `ScreenshotKey` (F5) |
+
+`SeparateView = true` with `ShowSeparateView = true` gives the 3D view its own window. With `ShowSeparateView = false` it
+is removed. With `SeparateView = false` it stays in the properties window.
 
 ## Troubleshooting
-- **Nothing appears / plugin silent:** check **two** logs —
-  `BepInEx/LogOutput.log` *and* `BepInEx/US2Dome.log` (a plain-text file this
-  mod writes so problems are never swallowed). The `[US2Dome] Diagnostics:` and
-  `Config bound OK` lines tell you whether `Awake`/init completed. If
-  `Second window NOT available: ...` is in the log, that Win32 call was blocked
-  (some VMs/remote desktops restrict `CreateWindowEx`) — the mod then falls back
-  to the overlay automatically.
-- **Second window is black / doesn't update:** it is being created but the dome
-  texture isn't filling (likely no main camera found). Check the `Diagnostics`
-  line; if it says `<none>`, tell me the game's camera setup and I'll adapt
-  `FindMainCamera`.
-- **Black/blank dome (overlay or window):** same as above — the scene camera may
-  not be found.
-- **Low FPS:** raise `CaptureEveryNFrames` to 2–4 and/or lower
-  `FaceResolution` / `DomeResolution`.
-- **Wants a bigger/sharper image:** raise `DomeResolution` (1024 → 2048) and
-  `FaceResolution` (512 → 1024) — at the cost of GPU.
-- **Dome looks flipped:** the face up-vector is already matched to the game's
-  Y-up convention; if it's mirrored, flip the `DomeMath.Up` vectors and
-  recompile.
+
+- **Log file:** the mod writes `BepInEx\US2Dome.log` only when **Make log file** is on (Shift+F2 menu, or `Logging/MakeLogFile`).
+  Turn it on before reproducing a problem. BepInEx's own `BepInEx\LogOutput.log` is separate and always written.
+- **Nothing happens:** check `LogOutput.log` for `[US2Dome]` lines. Make sure BepInEx started (a console window or
+  `LogOutput.log` appears) and that `US2Dome.dll` is in `BepInEx\plugins`.
+- **Dome is black:** make sure the dome renderer is enabled and look for `Initialized: 5/5 face RTs` in the log.
+- **A window is upside-down:** toggle its **Flip vertically** setting.
+- **Windows missing from the dome:** with the log on, look for `windows painted on top into face N`. If it never
+  appears, send the log along with a description of the problem.
+- **Low FPS:** raise `CaptureEveryNFrames` to 2-4, or lower face and dome resolution (Apply afterwards).
+- **Wrong window shown / a window never appears:** the mod finds game windows by scene path
+  (`Window/WindowPath`, `DataView/WindowPath`, `ObjectView/ViewName`). If a game update moves them, use the
+  diagnostics below to find the new path.
+
+### Finding another window's path (diagnostics)
+1. Press **F3** (writes a snapshot of the UI to the log; turn on **Make log file** first).
+2. Open the window you want in the game, then press **F3** again. The log lists what changed.
+3. Hover the mouse over the window and press **F4** (lists the UI objects under the mouse), then **F5**
+   (saves a full screenshot and a cropped one of the window).
+4. Put the window's path into the matching `WindowPath` config entry.
+
+## How it works (short)
+
+Universe Sandbox 2 uses the Universal Render Pipeline. The mod creates five face cameras that render into render
+textures, follows the main camera, and warps the five faces into a 180-degree equidistant dome on the GPU. The result
+is sent to the second window. Game windows are copied from the game's screen (or, for the 3D view, taken from the game's
+own render texture) and painted into each face texture after the face camera finishes, so they sit over everything.
+
+## Files
+
+| File | Purpose |
+|------|---------|
+| `src/US2Dome.cs` | the plugin: config, capture loop, overlay, logging, second window control |
+| `src/US2DomeSettings.cs` | the F2 / Shift+F2 settings menu |
+| `src/WindowMirror.cs` | properties window, 3D view and Data Views on the dome |
+| `src/Nameplates.cs` | planet labels on the dome |
+| `src/DomeGpu.cs`, `src/DomeMath.cs` | five-face to dome warp (GPU) and the math behind it |
+| `src/DomeWindow.cs`, `src/WindowPos.cs` | the second OS window and its remembered position |
+| `src/InputBlocker.cs` | hides menu clicks and keys from the game |
+| `src/UiDiag.cs` | F3 / F4 / F5 diagnostics |
+| `build.sh` | build script (mono `mcs`) |
