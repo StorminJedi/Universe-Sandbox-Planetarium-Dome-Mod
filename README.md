@@ -26,7 +26,9 @@ planet labels at positions you choose on the dome, so they stay readable on the 
 - The windows follow the game window size and UI scale automatically: the captured area is computed from the window's
   live on-screen rectangle divided by the current screen size, so changing monitor, resolution or window size is fine.
 - **In-game settings menu**: **F2** = simple menu, **Shift+F2** = full menu.
-- Optional in-game dome preview, full-dome mode (dome fills the game window), and a "Save PNG" button.
+- Optional **mini-view**: a small copy of the dome on the game screen, with adjustable size and position. It works with or
+  without the second window.
+- Optional full-dome mode (the dome fills the game window) with a "Save PNG" button.
 - Optional log file (off by default).
 
 ## Requirements
@@ -102,8 +104,8 @@ Notes:
 Press **F2** while the game window has focus.
 
 - **F2** opens the **simple menu**: renderer on/off, dome window fullscreen, second window, tilt, labels, the game
-  window, the 3D object view, and Data Views.
-- **Shift+F2** opens the **full menu** (everything, including zoom, capture rate, preview overlay, quality/resolution,
+  window, the 3D object view, Data Views, and the mini-view.
+- **Shift+F2** opens the **full menu** (everything, including zoom, capture rate, full-dome mode, quality/resolution,
   Apply / Reset all to defaults, hotkey rebinding, and the **Make log file** switch).
 - Pressing the other combination while a menu is open switches to it. Pressing the same one closes it.
 - Every slider has a number box: click it, type an exact value, press Enter.
@@ -124,6 +126,11 @@ window on the dome shrinks when the 3D view is cut out of it, but its text stays
 
 Windows only show on the dome while they are open in the game.
 
+### Mini-view
+A small copy of the dome drawn on the game screen. Turn it on with **Show the mini-view** in either menu; it does not
+depend on the second window. Settings: size (fraction of the screen height), left/right position (0 = left edge,
+1 = right edge) and up/down position (0 = top, 1 = bottom). It is off by default.
+
 ### Labels
 Planet and object labels are redrawn on the dome. Size, X/Y offset and distance are adjustable. Distance also sets how
 far from the viewer the dome windows are placed.
@@ -138,7 +145,8 @@ far from the viewer the dome windows are placed.
 
 | Section | What it holds |
 |---------|---------------|
-| `General` | `Enabled`, `DomeTiltDegrees`, `Zoom`, `CaptureEveryNFrames`, resolutions, `SecondWindow*`, overlay and full-dome options, `RememberWindowPosition` |
+| `General` | `Enabled`, `DomeTiltDegrees`, `Zoom`, `CaptureEveryNFrames`, resolutions, `SecondWindow*`, `FullDomeMode`, `RememberWindowPosition` |
+| `MiniView` | `Show` (default `false`), `Size`, `PositionX`, `PositionY` |
 | `Quality` | `FaceMipmaps`, `FaceMSAA`, `FaceShadows`, `FacePostProcessing` |
 | `Controls` | `SettingsHotkey` (default `F2`) |
 | `Nameplates` | `ShowLabels`, `LabelSize`, `LabelOffsetX`, `LabelOffsetY`, `LabelDistance` |
@@ -193,3 +201,4 @@ own render texture) and painted into each face texture after the face camera fin
 | `src/InputBlocker.cs` | hides menu clicks and keys from the game |
 | `src/UiDiag.cs` | F3 / F4 / F5 diagnostics |
 | `build.sh` | build script (mono `mcs`) |
+
