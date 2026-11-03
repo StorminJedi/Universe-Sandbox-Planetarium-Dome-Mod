@@ -44,7 +44,6 @@ namespace US2Dome
         float   _zoomEditTime = -10f;
         float   _resetArmedUntil = -10f;   // "Reset all to defaults" needs a second click within a few seconds
 
-        static readonly string[] AnchorNames = { "TopLeft", "TopRight", "BottomLeft", "BottomRight" };
 
         // =========================================================================
         //  helpers
@@ -541,20 +540,23 @@ namespace US2Dome
                 UiToggle("Data Views: flip vertically (if upside-down)", _cfgDvFlip);
             }
 
+            // ---------------- Mini-view (both menus) ----------------
+            GUILayout.Space(6f);
+            GUILayout.Label("<b>Mini-view on the game screen</b> (small copy of the dome)", RichLabel());
+            UiToggle("Show the mini-view (works with or without the second window)", _cfgOverlay);
+            if (_cfgOverlay.Value)
+            {
+                UiSlider("Mini-view: size (fraction of screen height)", _cfgOverlayScale, 0.05f, 1f, 2);
+                UiSlider("Mini-view: left (0) <-> right (1)", _cfgMvX, 0f, 1f, 2);
+                UiSlider("Mini-view: top (0) <-> bottom (1)", _cfgMvY, 0f, 1f, 2);
+            }
+
             if (full)
             {
             // ---------------- In-game display ----------------
             GUILayout.Space(6f);
             GUILayout.Label("<b>In-game preview</b>", RichLabel());
             UiToggle("Full-dome mode (fill the game screen)", _cfgFullDome);
-            UiToggle("Show overlay preview", _cfgOverlay);
-            UiToggle("Hide overlay while the second window is open", _cfgHideOverlayWhenWin);
-            UiToggle("Show 'Save PNG' button", _cfgShowSaveButton);
-            UiSlider("Overlay size (screen height)", _cfgOverlayScale, 0.05f, 1f, 2);
-            int sel = 3;
-            for (int i = 0; i < AnchorNames.Length; i++) if (AnchorNames[i] == _cfgOverlayAnchor.Value) sel = i;
-            int nsel = GUILayout.SelectionGrid(sel, AnchorNames, 4);
-            if (nsel != sel) { _cfgOverlayAnchor.Value = AnchorNames[nsel]; _cfgDirty = true; }
 
             // ---------------- Quality / resolution (need Apply) ----------------
             GUILayout.Space(6f);
