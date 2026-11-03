@@ -40,14 +40,12 @@ namespace US2Dome
         ConfigEntry<int>    _cfgEveryN;
         ConfigEntry<bool>   _cfgOverlay;
         ConfigEntry<float>  _cfgOverlayScale;
-        ConfigEntry<string> _cfgOverlayAnchor;
-        ConfigEntry<bool>   _cfgShowSaveButton;
+        ConfigEntry<float>  _cfgMvX, _cfgMvY;      // mini-view position: 0..1 across the free screen area
         ConfigEntry<bool>   _cfgFullDome;
         ConfigEntry<bool>   _cfgWindow;
         ConfigEntry<int>    _cfgWindowRes;
         ConfigEntry<bool>   _cfgWindowTopmost;
         ConfigEntry<bool>   _cfgWindowAuto;
-        ConfigEntry<bool>   _cfgHideOverlayWhenWin;
         ConfigEntry<float>  _cfgTilt;
         ConfigEntry<bool>   _cfgWindowFull;
         ConfigEntry<bool>   _cfgMips;
@@ -226,10 +224,11 @@ namespace US2Dome
                 _cfgDomeRes        = _cfgFile.Bind("General", "DomeResolution", 2048, "Dome texture size for the in-game overlay/PNG when the second window is OFF. (With the second window on, SecondWindowResolution is the dome size.)");
                 _cfgFaceRes        = _cfgFile.Bind("General", "FaceResolution", 1024, "Per-face capture resolution (power of two).");
                 _cfgEveryN         = _cfgFile.Bind("General", "CaptureEveryNFrames", 1, "Capture every N frames (1 = every frame).");
-                _cfgOverlay        = _cfgFile.Bind("General", "ShowOverlay", true, "Show the dome preview overlay in-game.");
-                _cfgOverlayScale   = _cfgFile.Bind("General", "OverlayScale", 0.35f, "Overlay size as a fraction of screen height (0.05 - 1.0).");
-                _cfgOverlayAnchor  = _cfgFile.Bind("General", "OverlayAnchor", "BottomRight", "Overlay position: TopLeft, TopRight, BottomLeft, BottomRight.");
-                _cfgShowSaveButton = _cfgFile.Bind("General", "ShowSaveButton", true, "Show the 'Save PNG' button with the overlay.");
+                // Mini-view: a small copy of the dome on the game screen. Independent of the second window.
+                _cfgOverlay        = _cfgFile.Bind("MiniView", "Show", false, "Show a small mini-view of the dome on the game screen (works with or without the second window).");
+                _cfgOverlayScale   = _cfgFile.Bind("MiniView", "Size", 0.30f, "Mini-view size as a fraction of the screen height (0.05 - 1.0).");
+                _cfgMvX            = _cfgFile.Bind("MiniView", "PositionX", 1.0f, "Mini-view horizontal position: 0 = left edge of the screen, 1 = right edge.");
+                _cfgMvY            = _cfgFile.Bind("MiniView", "PositionY", 1.0f, "Mini-view vertical position: 0 = top of the screen, 1 = bottom.");
                 _cfgFullDome       = _cfgFile.Bind("General", "FullDomeMode", false,
                     "Render the dome FULL-SCREEN (circular, black background) to project the game window directly.");
                 _cfgWindow         = _cfgFile.Bind("General", "SecondWindow", true,
@@ -239,8 +238,6 @@ namespace US2Dome
                     "Keep the dome image the same size as the dome window's drawing area (follows resizing / fullscreen on any monitor), so the window is always drawn 1:1. " +
                     "When the sizes differ, Windows rescales the image on the CPU every frame (slow: halves the frame rate on big windows). SecondWindowResolution is then only the starting size.");
                 _cfgWindowTopmost  = _cfgFile.Bind("General", "SecondWindowTopmost", true, "Keep the dome window above other windows.");
-                _cfgHideOverlayWhenWin = _cfgFile.Bind("General", "HideOverlayWhenSecondWindowActive", true,
-                    "Automatically hide the small in-game dome preview while the second (planetarium) window is open. Set to false to keep both visible.");
 
                 _cfgWindowFull = _cfgFile.Bind("General", "SecondWindowFullscreen", false,
                     "Start the dome window borderless-fullscreen on the monitor it opens on. (Drag it to the projector first and press F11 instead if you prefer.) " +
@@ -507,8 +504,7 @@ namespace US2Dome
         // True when nothing but the 2nd window reads the dome RT (so frames not headed for a readback are useless).
         bool WindowOnlyOutput()
         {
-            return _domeWindow != null && _domeWindow.Ready && !_cfgFullDome.Value &&
-                   (_cfgHideOverlayWhenWin.Value || !_cfgOverlay.Value);
+            return _domeWindow != null && _domeWindow.Ready && !_cfgFullDome.Value && !_cfgOverlay.Value;
         }
 
         // v1.6.3: optional per-face-camera URP savings, applied by reflection so build.sh needs no new reference.
@@ -680,32 +676,17 @@ namespace US2Dome
                 return;
             }
 
-            // ---- OVERLAY MODE ----
-            // If the second (planetarium) window is actively showing the dome and
-            // the user wants the in-game preview hidden, skip it entirely.
-            if (_cfgHideOverlayWhenWin.Value && _domeWindow != null && _domeWindow.Ready)
-                return;
-
+            // ---- MINI-VIEW ----
+            // A small copy of the dome on the game screen. Works with or without the second window.
             if (!_cfgOverlay.Value) return;
-            float scale = Mathf.Clamp(_cfgOverlayScale.Value, 0.05f, 1f);
-            float size  = Screen.height * scale;
-            float x, y;
-            string a = _cfgOverlayAnchor.Value;
-            if      (a == "TopLeft")    { x = 10f; y = 10f; }
-            else if (a == "TopRight")   { x = Screen.width - size - 10f; y = 10f; }
-            else if (a == "BottomLeft") { x = 10f; y = Screen.height - size - 10f; }
-            else                        { x = Screen.width - size - 10f; y = Screen.height - size - 10f; }
-
-            GUI.DrawTexture(new Rect(x, y, size, size), _gpu.DomeRT);
-            GUI.Label(new Rect(x, y - 24f, size, 24f), "US2Dome (180 deg equidistant)", GetLabelStyle());
-            if (_cfgShowSaveButton.Value)
-            {
-                float by = y - 54f;
-                if (GUI.Button(new Rect(x, by, size, 26f), "Save PNG", GetBtnStyle()))
-                    SavePng(x, y, size);
-                if (Time.time - _lastSaveTime < 4f)
-                    GUI.Label(new Rect(x, by - 18f, size, 18f), _lastSaveMsg, GetLabelStyle());
-            }
+            float size = Screen.height * Mathf.Clamp(_cfgOverlayScale.Value, 0.05f, 1f);
+            size = Mathf.Min(size, Mathf.Min(Screen.width, Screen.height));
+            const float margin = 10f;
+            float fx = Mathf.Clamp01(_cfgMvX.Value), fy = Mathf.Clamp01(_cfgMvY.Value);
+            float x = margin + Mathf.Max(0f, Screen.width  - size - 2f * margin) * fx;
+            float y = margin + Mathf.Max(0f, Screen.height - size - 2f * margin) * fy;
+            // The dome texture is drawn upside-down by IMGUI, so flip it vertically (left/right stays as it is).
+            GUI.DrawTextureWithTexCoords(new Rect(x, y, size, size), _gpu.DomeRT, new Rect(0f, 1f, 1f, -1f));
         }
 
         // ---- Lazy GUI styles (GUI.skin may be null in Awake) ----
