@@ -1,0 +1,2729 @@
+== TYPE US2Dome.DomeRemap
+   method System.Int32 US2Dome.DomeRemap::RoundToInt(System.Single) (IL len 5, maxstack 8)
+   method System.Int32 US2Dome.DomeRemap::ClampI(System.Int32,System.Int32,System.Int32) (IL len 12, maxstack 8)
+   method System.Int32[] US2Dome.DomeRemap::BuildSrcIndex(System.Int32,System.Int32) (IL len 117, maxstack 5)
+   method System.Void US2Dome.DomeRemap::RemapBytes(System.Byte[],System.Byte[],System.Int32[]) (IL len 22, maxstack 4)
+   ---- BODY of RemapBytes ----
+      newobj
+            -> System.Void US2Dome.DomeRemap/<RemapBytes>c__AnonStorey0::.ctor()
+      stloc.0
+      ldloc.0
+      ldarg.2
+      stfld
+            -> System.Int32[] US2Dome.DomeRemap/<RemapBytes>c__AnonStorey0::si
+      ldloc.0
+      ldarg.1
+      stfld
+            -> System.Byte[] US2Dome.DomeRemap/<RemapBytes>c__AnonStorey0::dome
+      ldloc.0
+      ldarg.0
+      stfld
+            -> System.Byte[] US2Dome.DomeRemap/<RemapBytes>c__AnonStorey0::faces
+      ldc.i4.0
+      ldloc.0
+      ldfld
+            -> System.Int32[] US2Dome.DomeRemap/<RemapBytes>c__AnonStorey0::si
+      ldlen
+      conv.i4
+      ldloc.0
+      ldftn
+            -> System.Void US2Dome.DomeRemap/<RemapBytes>c__AnonStorey0::<>m__0(System.Int32)
+      newobj
+            -> System.Void System.Action`1<System.Int32>::.ctor(System.Object,System.IntPtr)
+      call
+            -> System.Threading.Tasks.ParallelLoopResult System.Threading.Tasks.Parallel::For(System.Int32,System.Int32,System.Action`1<System.Int32>)
+      pop
+      ret
+   method System.Void US2Dome.DomeRemap::WindowResample(System.Byte[],System.Int32,System.Int32,System.Int32,System.Byte[]) (IL len 39, maxstack 4)
+   ---- BODY of WindowResample ----
+      newobj
+            -> System.Void US2Dome.DomeRemap/<WindowResample>c__AnonStorey1::.ctor()
+      stloc.0
+      ldloc.0
+      ldarg.2
+      stfld
+            -> System.Int32 US2Dome.DomeRemap/<WindowResample>c__AnonStorey1::bufRows
+      ldloc.0
+      ldarg.3
+      stfld
+            -> System.Int32 US2Dome.DomeRemap/<WindowResample>c__AnonStorey1::bufCols
+      ldloc.0
+      ldarg.1
+      stfld
+            -> System.Int32 US2Dome.DomeRemap/<WindowResample>c__AnonStorey1::srcSize
+      ldloc.0
+      ldarg.0
+      stfld
+            -> System.Byte[] US2Dome.DomeRemap/<WindowResample>c__AnonStorey1::domeRGBA
+      ldloc.0
+      ldarg.s
+            -> dib
+      stfld
+            -> System.Byte[] US2Dome.DomeRemap/<WindowResample>c__AnonStorey1::dib
+      ldloc.0
+      ldfld
+            -> System.Int32 US2Dome.DomeRemap/<WindowResample>c__AnonStorey1::srcSize
+      ldc.i4.2
+      bge
+            -> IL_003d: ldloc.0
+      ldloc.0
+      ldc.i4.2
+      stfld
+            -> System.Int32 US2Dome.DomeRemap/<WindowResample>c__AnonStorey1::srcSize
+      ldloc.0
+      ldloc.0
+      ldfld
+            -> System.Int32 US2Dome.DomeRemap/<WindowResample>c__AnonStorey1::srcSize
+      ldc.i4.1
+      sub
+      stfld
+            -> System.Int32 US2Dome.DomeRemap/<WindowResample>c__AnonStorey1::sMax
+      ldc.i4.0
+      ldloc.0
+      ldfld
+            -> System.Int32 US2Dome.DomeRemap/<WindowResample>c__AnonStorey1::bufRows
+      ldloc.0
+      ldftn
+            -> System.Void US2Dome.DomeRemap/<WindowResample>c__AnonStorey1::<>m__0(System.Int32)
+      newobj
+            -> System.Void System.Action`1<System.Int32>::.ctor(System.Object,System.IntPtr)
+      call
+            -> System.Threading.Tasks.ParallelLoopResult System.Threading.Tasks.Parallel::For(System.Int32,System.Int32,System.Action`1<System.Int32>)
+      pop
+      ret
+== TYPE US2Dome.DomeWorker
+   field System.Threading.Thread US2Dome.DomeWorker::_thread
+   field System.Object US2Dome.DomeWorker::_gate
+   field System.Boolean modreq(System.Runtime.CompilerServices.IsVolatile) US2Dome.DomeWorker::_quit
+   field System.Byte[] US2Dome.DomeWorker::_src
+   field System.Int32 US2Dome.DomeWorker::_faceRes
+   field System.Int32 US2Dome.DomeWorker::_outRes
+   field System.Int32 US2Dome.DomeWorker::_winW
+   field System.Int32 US2Dome.DomeWorker::_winH
+   field System.Byte[] US2Dome.DomeWorker::_dome
+   field System.Byte[] US2Dome.DomeWorker::_win
+   field System.Boolean US2Dome.DomeWorker::_hasJob
+   field System.Int32[] US2Dome.DomeWorker::_index
+   field System.Int32 US2Dome.DomeWorker::_indexFaceRes
+   field System.Int32 US2Dome.DomeWorker::_indexDomeRes
+   field System.Boolean US2Dome.DomeWorker::_resultReady
+   method System.Void US2Dome.DomeWorker::.ctor() (IL len 29, maxstack 3)
+   method System.Boolean US2Dome.DomeWorker::get_IsBusy() (IL len 19, maxstack 2)
+   method System.Boolean US2Dome.DomeWorker::Submit(System.Byte[],System.Int32,System.Int32,System.Int32,System.Int32,System.Byte[],System.Byte[]) (IL len 54, maxstack 2)
+   ---- BODY of Submit ----
+      ldarg.0
+      ldfld
+            -> System.Object US2Dome.DomeWorker::_gate
+      stloc.0
+      ldc.i4.0
+      stloc.1
+      ldloc.0
+      ldloca.s
+            -> V_1
+      call
+            -> System.Void System.Threading.Monitor::Enter(System.Object,System.Boolean&)
+      ldarg.0
+      ldfld
+            -> System.Boolean US2Dome.DomeWorker::_hasJob
+      brfalse
+            -> IL_0023: ldarg.0
+      ldc.i4.0
+      stloc.2
+      leave
+            -> IL_0082: ldloc.2
+      ldarg.0
+      ldarg.1
+      stfld
+            -> System.Byte[] US2Dome.DomeWorker::_src
+      ldarg.0
+      ldarg.2
+      stfld
+            -> System.Int32 US2Dome.DomeWorker::_faceRes
+      ldarg.0
+      ldarg.3
+      stfld
+            -> System.Int32 US2Dome.DomeWorker::_outRes
+      ldarg.0
+      ldarg.s
+            -> winW
+      stfld
+            -> System.Int32 US2Dome.DomeWorker::_winW
+      ldarg.0
+      ldarg.s
+            -> winH
+      stfld
+            -> System.Int32 US2Dome.DomeWorker::_winH
+      ldarg.0
+      ldarg.s
+            -> dome
+      stfld
+            -> System.Byte[] US2Dome.DomeWorker::_dome
+      ldarg.0
+      ldarg.s
+            -> win
+      stfld
+            -> System.Byte[] US2Dome.DomeWorker::_win
+      ldarg.0
+      ldc.i4.0
+      stfld
+            -> System.Boolean US2Dome.DomeWorker::_resultReady
+      ldarg.0
+      ldc.i4.1
+      stfld
+            -> System.Boolean US2Dome.DomeWorker::_hasJob
+      ldarg.0
+      ldfld
+            -> System.Object US2Dome.DomeWorker::_gate
+      call
+            -> System.Void System.Threading.Monitor::Pulse(System.Object)
+      leave
+            -> IL_0080: ldc.i4.1
+      ldloc.1
+      brfalse.s
+            -> IL_007f: endfinally
+      ldloc.0
+      call
+            -> System.Void System.Threading.Monitor::Exit(System.Object)
+      endfinally
+      ldc.i4.1
+      ret
+      ldloc.2
+      ret
+   method System.Boolean US2Dome.DomeWorker::TryGetResult() (IL len 26, maxstack 2)
+   ---- BODY of TryGetResult ----
+      ldarg.0
+      ldfld
+            -> System.Object US2Dome.DomeWorker::_gate
+      stloc.0
+      ldc.i4.0
+      stloc.1
+      ldloc.0
+      ldloca.s
+            -> V_1
+      call
+            -> System.Void System.Threading.Monitor::Enter(System.Object,System.Boolean&)
+      ldarg.0
+      ldfld
+            -> System.Boolean US2Dome.DomeWorker::_resultReady
+      stloc.2
+      ldloc.2
+      brfalse
+            -> IL_0025: ldloc.2
+      ldarg.0
+      ldc.i4.0
+      stfld
+            -> System.Boolean US2Dome.DomeWorker::_resultReady
+      ldloc.2
+      stloc.3
+      leave
+            -> IL_0036: ldloc.3
+      ldloc.1
+      brfalse.s
+            -> IL_0035: endfinally
+      ldloc.0
+      call
+            -> System.Void System.Threading.Monitor::Exit(System.Object)
+      endfinally
+      ldloc.3
+      ret
+   method System.Int32[] US2Dome.DomeWorker::GetIndex(System.Int32,System.Int32) (IL len 25, maxstack 3)
+   method System.Void US2Dome.DomeWorker::Loop() (IL len 94, maxstack 5)
+   ---- BODY of Loop ----
+      ldarg.0
+      ldfld
+            -> System.Object US2Dome.DomeWorker::_gate
+      stloc.s
+            -> V_7
+      ldc.i4.0
+      stloc.s
+            -> V_8
+      ldloc.s
+            -> V_7
+      ldloca.s
+            -> V_8
+      call
+            -> System.Void System.Threading.Monitor::Enter(System.Object,System.Boolean&)
+      br
+            -> IL_0025: ldarg.0
+      ldarg.0
+      ldfld
+            -> System.Object US2Dome.DomeWorker::_gate
+      call
+            -> System.Boolean System.Threading.Monitor::Wait(System.Object)
+      pop
+      ldarg.0
+      ldfld
+            -> System.Boolean US2Dome.DomeWorker::_hasJob
+      brtrue
+            -> IL_003d: ldarg.0
+      ldarg.0
+      volatile.
+      ldfld
+            -> System.Boolean modreq(System.Runtime.CompilerServices.IsVolatile) US2Dome.DomeWorker::_quit
+      brfalse
+            -> IL_0019: ldarg.0
+      ldarg.0
+      volatile.
+      ldfld
+            -> System.Boolean modreq(System.Runtime.CompilerServices.IsVolatile) US2Dome.DomeWorker::_quit
+      brfalse
+            -> IL_004f: ldarg.0
+      leave
+            -> IL_0101: ret
+      ldarg.0
+      ldfld
+            -> System.Byte[] US2Dome.DomeWorker::_src
+      callvirt
+            -> System.Object System.Array::Clone()
+      castclass
+            -> System.Byte[]
+      stloc.0
+      ldarg.0
+      ldfld
+            -> System.Byte[] US2Dome.DomeWorker::_dome
+      stloc.1
+      ldarg.0
+      ldfld
+            -> System.Byte[] US2Dome.DomeWorker::_win
+      stloc.2
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.DomeWorker::_outRes
+      stloc.3
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.DomeWorker::_faceRes
+      stloc.s
+            -> V_4
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.DomeWorker::_winW
+      stloc.s
+            -> V_5
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.DomeWorker::_winH
+      stloc.s
+            -> V_6
+      ldarg.0
+      ldc.i4.0
+      stfld
+            -> System.Boolean US2Dome.DomeWorker::_hasJob
+      leave
+            -> IL_00a5: ldarg.0
+      ldloc.s
+            -> V_8
+      brfalse.s
+            -> IL_00a4: endfinally
+      ldloc.s
+            -> V_7
+      call
+            -> System.Void System.Threading.Monitor::Exit(System.Object)
+      endfinally
+      ldarg.0
+      ldloc.s
+            -> V_4
+      ldloc.3
+      call
+            -> System.Int32[] US2Dome.DomeWorker::GetIndex(System.Int32,System.Int32)
+      stloc.s
+            -> V_9
+      ldloc.0
+      ldloc.1
+      ldloc.s
+            -> V_9
+      call
+            -> System.Void US2Dome.DomeRemap::RemapBytes(System.Byte[],System.Byte[],System.Int32[])
+      ldloc.1
+      ldloc.3
+      ldloc.s
+            -> V_6
+      ldloc.s
+            -> V_5
+      ldloc.2
+      call
+            -> System.Void US2Dome.DomeRemap::WindowResample(System.Byte[],System.Int32,System.Int32,System.Int32,System.Byte[])
+      leave
+            -> IL_00d0: ldarg.0
+      pop
+      leave
+            -> IL_00d0: ldarg.0
+      ldarg.0
+      ldfld
+            -> System.Object US2Dome.DomeWorker::_gate
+      stloc.s
+            -> V_10
+      ldc.i4.0
+      stloc.s
+            -> V_11
+      ldloc.s
+            -> V_10
+      ldloca.s
+            -> V_11
+      call
+            -> System.Void System.Threading.Monitor::Enter(System.Object,System.Boolean&)
+      ldarg.0
+      ldc.i4.1
+      stfld
+            -> System.Boolean US2Dome.DomeWorker::_resultReady
+      leave
+            -> IL_00fc: br IL_0000
+      ldloc.s
+            -> V_11
+      brfalse.s
+            -> IL_00fb: endfinally
+      ldloc.s
+            -> V_10
+      call
+            -> System.Void System.Threading.Monitor::Exit(System.Object)
+      endfinally
+      br
+            -> IL_0000: ldarg.0
+      ret
+   method System.Void US2Dome.DomeWorker::Dispose() (IL len 22, maxstack 2)
+== TYPE US2Dome.DomeWindow
+   field System.UInt32 US2Dome.DomeWindow::WS_OVERLAPPEDWINDOW
+   field System.UInt32 US2Dome.DomeWindow::WS_EX_TOPMOST
+   field System.UInt32 US2Dome.DomeWindow::WS_EX_TOOLWINDOW
+   field System.Int32 US2Dome.DomeWindow::WM_DESTROY
+   field System.Int32 US2Dome.DomeWindow::WM_CLOSE
+   field System.Int32 US2Dome.DomeWindow::SRCCOPY
+   field System.UInt32 US2Dome.DomeWindow::DIB_RGB_COLORS
+   field US2Dome.DomeWindow/WNDPROC US2Dome.DomeWindow::_wndProcDelegate
+   field System.IntPtr US2Dome.DomeWindow::_wndProcPtr
+   field US2Dome.DomeWindow US2Dome.DomeWindow::_instance
+   field System.IntPtr US2Dome.DomeWindow::_hwnd
+   field System.IntPtr US2Dome.DomeWindow::_hbmDib
+   field System.IntPtr US2Dome.DomeWindow::_dibBits
+   field System.IntPtr US2Dome.DomeWindow::_hbmBlack
+   field System.IntPtr US2Dome.DomeWindow::_memDC
+   field System.IntPtr US2Dome.DomeWindow::_oldObj
+   field System.Int32 US2Dome.DomeWindow::_w
+   field System.Int32 US2Dome.DomeWindow::_h
+   field System.Byte[] US2Dome.DomeWindow::_dibBuf
+   field System.Boolean US2Dome.DomeWindow::_ready
+   field System.String US2Dome.DomeWindow::_err
+   field System.Boolean US2Dome.DomeWindow::_destroying
+   field System.Action US2Dome.DomeWindow::_onClose
+   method System.Void US2Dome.DomeWindow::.cctor() (IL len 8, maxstack 8)
+   method System.Void US2Dome.DomeWindow::.ctor(System.Int32,System.Int32,System.Boolean,System.Action) (IL len 288, maxstack 13)
+   method System.UInt32 US2Dome.DomeWindow::RegisterClassExW(US2Dome.DomeWindow/WNDCLASSEX&) (IL len )
+   method System.IntPtr US2Dome.DomeWindow::CreateWindowExW(System.UInt32,System.String,System.String,System.UInt32,System.Int32,System.Int32,System.Int32,System.Int32,System.IntPtr,System.IntPtr,System.IntPtr,System.IntPtr) (IL len )
+   method System.Boolean US2Dome.DomeWindow::ShowWindow(System.IntPtr,System.Int32) (IL len )
+   method System.Void US2Dome.DomeWindow::PostMessageW(System.IntPtr,System.UInt32,System.IntPtr,System.IntPtr) (IL len )
+   method System.Boolean US2Dome.DomeWindow::GetClientRect(System.IntPtr,US2Dome.DomeWindow/RECT&) (IL len )
+   method System.IntPtr US2Dome.DomeWindow::DefWindowProcW(System.IntPtr,System.UInt32,System.IntPtr,System.IntPtr) (IL len )
+   method System.IntPtr US2Dome.DomeWindow::GetDC(System.IntPtr) (IL len )
+   method System.Int32 US2Dome.DomeWindow::ReleaseDC(System.IntPtr,System.IntPtr) (IL len )
+   method System.IntPtr US2Dome.DomeWindow::CreateCompatibleDC(System.IntPtr) (IL len )
+   method System.Boolean US2Dome.DomeWindow::DeleteDC(System.IntPtr) (IL len )
+   method System.IntPtr US2Dome.DomeWindow::SelectObject(System.IntPtr,System.IntPtr) (IL len )
+   method System.Boolean US2Dome.DomeWindow::DeleteObject(System.IntPtr) (IL len )
+   method System.Boolean US2Dome.DomeWindow::StretchBlt(System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32,System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32) (IL len )
+   method System.IntPtr US2Dome.DomeWindow::CreateDIBSection(System.IntPtr,US2Dome.DomeWindow/BITMAPINFOHEADER&,System.UInt32,System.IntPtr&,System.IntPtr,System.UInt32) (IL len )
+   method System.IntPtr US2Dome.DomeWindow::GetModuleHandleW(System.String) (IL len )
+   method System.Boolean US2Dome.DomeWindow::get_Ready() (IL len 3, maxstack 8)
+   method System.String US2Dome.DomeWindow::get_Error() (IL len 3, maxstack 8)
+   method System.Void US2Dome.DomeWindow::PushBytes(System.Byte[]) (IL len 145, maxstack 11)
+   ---- BODY of PushBytes ----
+      ldarg.0
+      ldfld
+            -> System.Boolean US2Dome.DomeWindow::_ready
+      brfalse
+            -> IL_0026: ret
+      ldarg.0
+      ldfld
+            -> System.IntPtr US2Dome.DomeWindow::_dibBits
+      ldsfld
+            -> System.IntPtr System.IntPtr::Zero
+      call
+            -> System.Boolean System.IntPtr::op_Equality(System.IntPtr,System.IntPtr)
+      brtrue
+            -> IL_0026: ret
+      ldarg.1
+      brtrue
+            -> IL_0027: ldarg.0
+      ret
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.DomeWindow::_h
+      stloc.0
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.DomeWindow::_w
+      stloc.1
+      ldloc.0
+      ldloc.1
+      mul
+      ldc.i4.4
+      mul
+      stloc.2
+      ldarg.1
+      ldlen
+      conv.i4
+      ldloc.2
+      bge
+            -> IL_0045: ldarg.1
+      ret
+      ldarg.1
+      ldc.i4.0
+      ldarg.0
+      ldfld
+            -> System.IntPtr US2Dome.DomeWindow::_dibBits
+      ldloc.2
+      call
+            -> System.Void System.Runtime.InteropServices.Marshal::Copy(System.Byte[],System.Int32,System.IntPtr,System.Int32)
+      ldarg.0
+      ldfld
+            -> System.IntPtr US2Dome.DomeWindow::_hwnd
+      call
+            -> System.IntPtr US2Dome.DomeWindow::GetDC(System.IntPtr)
+      stloc.3
+      ldloc.3
+      ldsfld
+            -> System.IntPtr System.IntPtr::Zero
+      call
+            -> System.Boolean System.IntPtr::op_Equality(System.IntPtr,System.IntPtr)
+      brfalse
+            -> IL_0074: ldarg.0
+      leave
+            -> IL_0174: ret
+      ldarg.0
+      ldfld
+            -> System.IntPtr US2Dome.DomeWindow::_hwnd
+      ldloca.s
+            -> V_4
+      call
+            -> System.Boolean US2Dome.DomeWindow::GetClientRect(System.IntPtr,US2Dome.DomeWindow/RECT&)
+      pop
+      ldloca.s
+            -> V_4
+      ldfld
+            -> System.Int32 US2Dome.DomeWindow/RECT::right
+      ldloca.s
+            -> V_4
+      ldfld
+            -> System.Int32 US2Dome.DomeWindow/RECT::left
+      sub
+      stloc.s
+            -> V_5
+      ldloc.s
+            -> V_5
+      ldc.i4.1
+      bge
+            -> IL_009e: ldloca.s V_4
+      ldc.i4.1
+      stloc.s
+            -> V_5
+      ldloca.s
+            -> V_4
+      ldfld
+            -> System.Int32 US2Dome.DomeWindow/RECT::bottom
+      ldloca.s
+            -> V_4
+      ldfld
+            -> System.Int32 US2Dome.DomeWindow/RECT::top
+      sub
+      stloc.s
+            -> V_6
+      ldloc.s
+            -> V_6
+      ldc.i4.1
+      bge
+            -> IL_00ba: ldarg.0
+      ldc.i4.1
+      stloc.s
+            -> V_6
+      ldarg.0
+      ldfld
+            -> System.IntPtr US2Dome.DomeWindow::_hbmBlack
+      ldsfld
+            -> System.IntPtr System.IntPtr::Zero
+      call
+            -> System.Boolean System.IntPtr::op_Inequality(System.IntPtr,System.IntPtr)
+      brfalse
+            -> IL_010f: ldloc.s V_5
+      ldarg.0
+      ldfld
+            -> System.IntPtr US2Dome.DomeWindow::_memDC
+      ldarg.0
+      ldfld
+            -> System.IntPtr US2Dome.DomeWindow::_hbmBlack
+      call
+            -> System.IntPtr US2Dome.DomeWindow::SelectObject(System.IntPtr,System.IntPtr)
+      pop
+      ldloc.3
+      ldc.i4.0
+      ldc.i4.0
+      ldloc.s
+            -> V_5
+      ldloc.s
+            -> V_6
+      ldarg.0
+      ldfld
+            -> System.IntPtr US2Dome.DomeWindow::_memDC
+      ldc.i4.0
+      ldc.i4.0
+      ldc.i4.1
+      ldc.i4.1
+      ldc.i4
+            -> 13369376
+      call
+            -> System.Boolean US2Dome.DomeWindow::StretchBlt(System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32,System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)
+      pop
+      ldarg.0
+      ldfld
+            -> System.IntPtr US2Dome.DomeWindow::_memDC
+      ldarg.0
+      ldfld
+            -> System.IntPtr US2Dome.DomeWindow::_hbmDib
+      call
+            -> System.IntPtr US2Dome.DomeWindow::SelectObject(System.IntPtr,System.IntPtr)
+      pop
+      ldloc.s
+            -> V_5
+      ldloc.s
+            -> V_6
+      call
+            -> System.Int32 System.Math::Min(System.Int32,System.Int32)
+      stloc.s
+            -> V_7
+      ldloc.s
+            -> V_5
+      ldloc.s
+            -> V_7
+      sub
+      ldc.i4.2
+      div
+      stloc.s
+            -> V_8
+      ldloc.s
+            -> V_6
+      ldloc.s
+            -> V_7
+      sub
+      ldc.i4.2
+      div
+      stloc.s
+            -> V_9
+      ldloc.3
+      ldloc.s
+            -> V_8
+      ldloc.s
+            -> V_9
+      ldloc.s
+            -> V_7
+      ldloc.s
+            -> V_7
+      ldarg.0
+      ldfld
+            -> System.IntPtr US2Dome.DomeWindow::_memDC
+      ldc.i4.0
+      ldc.i4.0
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.DomeWindow::_w
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.DomeWindow::_h
+      ldc.i4
+            -> 13369376
+      call
+            -> System.Boolean US2Dome.DomeWindow::StretchBlt(System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32,System.IntPtr,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)
+      pop
+      ldarg.0
+      ldfld
+            -> System.IntPtr US2Dome.DomeWindow::_hwnd
+      ldloc.3
+      call
+            -> System.Int32 US2Dome.DomeWindow::ReleaseDC(System.IntPtr,System.IntPtr)
+      pop
+      leave
+            -> IL_0174: ret
+      stloc.s
+            -> V_10
+      ldloc.s
+            -> V_10
+      call
+            -> System.Void UnityEngine.Debug::LogException(System.Exception)
+      leave
+            -> IL_0174: ret
+      ret
+   method System.Void US2Dome.DomeWindow::Push(UnityEngine.Color32[]) (IL len 283, maxstack 11)
+   method System.IntPtr US2Dome.DomeWindow::Proc(System.IntPtr,System.UInt32,System.IntPtr,System.IntPtr) (IL len 48, maxstack 4)
+   method System.Void US2Dome.DomeWindow::Dispose() (IL len 30, maxstack 4)
+   method System.Void US2Dome.DomeWindow::CleanupGdi() (IL len 43, maxstack 2)
+== TYPE US2Dome.US2Dome
+   field BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgEnabled
+   field BepInEx.Configuration.ConfigEntry`1<System.Int32> US2Dome.US2Dome::_cfgDomeRes
+   field BepInEx.Configuration.ConfigEntry`1<System.Int32> US2Dome.US2Dome::_cfgFaceRes
+   field BepInEx.Configuration.ConfigEntry`1<System.Int32> US2Dome.US2Dome::_cfgEveryN
+   field BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgOverlay
+   field BepInEx.Configuration.ConfigEntry`1<System.Single> US2Dome.US2Dome::_cfgOverlayScale
+   field BepInEx.Configuration.ConfigEntry`1<System.String> US2Dome.US2Dome::_cfgOverlayAnchor
+   field BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgShowSaveButton
+   field BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgFullDome
+   field BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgWindow
+   field BepInEx.Configuration.ConfigEntry`1<System.Int32> US2Dome.US2Dome::_cfgWindowRes
+   field BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgWindowTopmost
+   field BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgHideOverlayWhenWin
+   field UnityEngine.GameObject US2Dome.US2Dome::_holder
+   field UnityEngine.Camera[] US2Dome.US2Dome::_faceCams
+   field UnityEngine.RenderTexture[] US2Dome.US2Dome::_faceRTs
+   field UnityEngine.Texture2D US2Dome.US2Dome::_domeTex
+   field System.Byte[] US2Dome.US2Dome::_domeBytes
+   field System.Byte[] US2Dome.US2Dome::_faceBytes
+   field UnityEngine.Color32[] US2Dome.US2Dome::_domeC32
+   field UnityEngine.Texture2D US2Dome.US2Dome::_scratch
+   field UnityEngine.GUIStyle US2Dome.US2Dome::_labelStyle
+   field UnityEngine.GUIStyle US2Dome.US2Dome::_btnStyle
+   field UnityEngine.GUIStyle US2Dome.US2Dome::_fullBtnStyle
+   field System.Boolean US2Dome.US2Dome::_initDone
+   field System.Boolean US2Dome.US2Dome::_initFailed
+   field System.Int32 US2Dome.US2Dome::_frame
+   field System.Boolean US2Dome.US2Dome::_willCapture
+   field System.Boolean US2Dome.US2Dome::_diagDone
+   field System.String US2Dome.US2Dome::_lastSaveMsg
+   field System.Single US2Dome.US2Dome::_lastSaveTime
+   field US2Dome.DomeWindow US2Dome.US2Dome::_domeWindow
+   field System.Boolean US2Dome.US2Dome::_windowDisabledByClose
+   field System.Int32 US2Dome.US2Dome::_windowRes
+   field US2Dome.DomeWorker US2Dome.US2Dome::_worker
+   field System.Byte[] US2Dome.US2Dome::_winBytes
+   field System.Boolean US2Dome.US2Dome::_resultPending
+   field System.Int32 US2Dome.US2Dome::_domeRes
+   field System.Int32 US2Dome.US2Dome::_faceRes
+   field System.String US2Dome.US2Dome::_logFile
+   method System.Void US2Dome.US2Dome::.ctor() (IL len 35, maxstack 2)
+   method System.Void US2Dome.US2Dome::LogInfo(System.String) (IL len 9, maxstack 8)
+   method System.Void US2Dome.US2Dome::LogWarn(System.String) (IL len 9, maxstack 8)
+   method System.Void US2Dome.US2Dome::LogError(System.String) (IL len 9, maxstack 8)
+   method System.Void US2Dome.US2Dome::LogToFile(System.String,System.String) (IL len 63, maxstack 5)
+   method System.Void US2Dome.US2Dome::Awake() (IL len 241, maxstack 6)
+   ---- BODY of Awake ----
+      ldarg.0
+      ldstr
+            -> [US2Dome] Initializing (URP 5-face dome capture)...
+      call
+            -> System.Void US2Dome.US2Dome::LogInfo(System.String)
+      ldarg.0
+      call
+            -> UnityEngine.GameObject UnityEngine.Component::get_gameObject()
+      call
+            -> System.Void UnityEngine.Object::DontDestroyOnLoad(UnityEngine.Object)
+      leave
+            -> IL_0037: ldarg.0
+      stloc.0
+      ldarg.0
+      ldstr
+            -> [US2Dome] DontDestroyOnLoad(self) failed: 
+      ldloc.0
+      callvirt
+            -> System.String System.Exception::get_Message()
+      call
+            -> System.String System.String::Concat(System.String,System.String)
+      call
+            -> System.Void US2Dome.US2Dome::LogWarn(System.String)
+      leave
+            -> IL_0037: ldarg.0
+      ldarg.0
+      ldarg.0
+      call
+            -> BepInEx.Configuration.ConfigFile BepInEx.BaseUnityPlugin::get_Config()
+      ldstr
+            -> General
+      ldstr
+            -> Enabled
+      ldc.i4.1
+      ldstr
+            -> Enable the dome renderer.
+      callvirt
+            -> BepInEx.Configuration.ConfigEntry`1<!!0> BepInEx.Configuration.ConfigFile::Bind<System.Boolean>(System.String,System.String,!!0,System.String)
+      stfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgEnabled
+      ldarg.0
+      ldarg.0
+      call
+            -> BepInEx.Configuration.ConfigFile BepInEx.BaseUnityPlugin::get_Config()
+      ldstr
+            -> General
+      ldstr
+            -> DomeResolution
+      ldc.i4
+            -> 1024
+      ldstr
+            -> Output square resolution (power of two).
+      callvirt
+            -> BepInEx.Configuration.ConfigEntry`1<!!0> BepInEx.Configuration.ConfigFile::Bind<System.Int32>(System.String,System.String,!!0,System.String)
+      stfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Int32> US2Dome.US2Dome::_cfgDomeRes
+      ldarg.0
+      ldarg.0
+      call
+            -> BepInEx.Configuration.ConfigFile BepInEx.BaseUnityPlugin::get_Config()
+      ldstr
+            -> General
+      ldstr
+            -> FaceResolution
+      ldc.i4
+            -> 512
+      ldstr
+            -> Per-face capture resolution (power of two).
+      callvirt
+            -> BepInEx.Configuration.ConfigEntry`1<!!0> BepInEx.Configuration.ConfigFile::Bind<System.Int32>(System.String,System.String,!!0,System.String)
+      stfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Int32> US2Dome.US2Dome::_cfgFaceRes
+      ldarg.0
+      ldarg.0
+      call
+            -> BepInEx.Configuration.ConfigFile BepInEx.BaseUnityPlugin::get_Config()
+      ldstr
+            -> General
+      ldstr
+            -> CaptureEveryNFrames
+      ldc.i4.3
+      ldstr
+            -> Capture every N frames (1 = every frame).
+      callvirt
+            -> BepInEx.Configuration.ConfigEntry`1<!!0> BepInEx.Configuration.ConfigFile::Bind<System.Int32>(System.String,System.String,!!0,System.String)
+      stfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Int32> US2Dome.US2Dome::_cfgEveryN
+      ldarg.0
+      ldarg.0
+      call
+            -> BepInEx.Configuration.ConfigFile BepInEx.BaseUnityPlugin::get_Config()
+      ldstr
+            -> General
+      ldstr
+            -> ShowOverlay
+      ldc.i4.1
+      ldstr
+            -> Show the dome preview overlay in-game.
+      callvirt
+            -> BepInEx.Configuration.ConfigEntry`1<!!0> BepInEx.Configuration.ConfigFile::Bind<System.Boolean>(System.String,System.String,!!0,System.String)
+      stfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgOverlay
+      ldarg.0
+      ldarg.0
+      call
+            -> BepInEx.Configuration.ConfigFile BepInEx.BaseUnityPlugin::get_Config()
+      ldstr
+            -> General
+      ldstr
+            -> OverlayScale
+      ldc.r4
+            -> 0.35
+      ldstr
+            -> Overlay size as a fraction of screen height (0.05 - 1.0).
+      callvirt
+            -> BepInEx.Configuration.ConfigEntry`1<!!0> BepInEx.Configuration.ConfigFile::Bind<System.Single>(System.String,System.String,!!0,System.String)
+      stfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Single> US2Dome.US2Dome::_cfgOverlayScale
+      ldarg.0
+      ldarg.0
+      call
+            -> BepInEx.Configuration.ConfigFile BepInEx.BaseUnityPlugin::get_Config()
+      ldstr
+            -> General
+      ldstr
+            -> OverlayAnchor
+      ldstr
+            -> BottomRight
+      ldstr
+            -> Overlay position: TopLeft, TopRight, BottomLeft, BottomRight.
+      callvirt
+            -> BepInEx.Configuration.ConfigEntry`1<!!0> BepInEx.Configuration.ConfigFile::Bind<System.String>(System.String,System.String,!!0,System.String)
+      stfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.String> US2Dome.US2Dome::_cfgOverlayAnchor
+      ldarg.0
+      ldarg.0
+      call
+            -> BepInEx.Configuration.ConfigFile BepInEx.BaseUnityPlugin::get_Config()
+      ldstr
+            -> General
+      ldstr
+            -> ShowSaveButton
+      ldc.i4.1
+      ldstr
+            -> Show the 'Save PNG' button with the overlay.
+      callvirt
+            -> BepInEx.Configuration.ConfigEntry`1<!!0> BepInEx.Configuration.ConfigFile::Bind<System.Boolean>(System.String,System.String,!!0,System.String)
+      stfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgShowSaveButton
+      ldarg.0
+      ldarg.0
+      call
+            -> BepInEx.Configuration.ConfigFile BepInEx.BaseUnityPlugin::get_Config()
+      ldstr
+            -> General
+      ldstr
+            -> FullDomeMode
+      ldc.i4.0
+      ldstr
+            -> Render the dome FULL-SCREEN (circular, black background) to project the game window directly.
+      callvirt
+            -> BepInEx.Configuration.ConfigEntry`1<!!0> BepInEx.Configuration.ConfigFile::Bind<System.Boolean>(System.String,System.String,!!0,System.String)
+      stfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgFullDome
+      ldarg.0
+      ldarg.0
+      call
+            -> BepInEx.Configuration.ConfigFile BepInEx.BaseUnityPlugin::get_Config()
+      ldstr
+            -> General
+      ldstr
+            -> SecondWindow
+      ldc.i4.1
+      ldstr
+            -> Show the live dome in a SEPARATE OS window (recommended). Game window stays normal.
+      callvirt
+            -> BepInEx.Configuration.ConfigEntry`1<!!0> BepInEx.Configuration.ConfigFile::Bind<System.Boolean>(System.String,System.String,!!0,System.String)
+      stfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgWindow
+      ldarg.0
+      ldarg.0
+      call
+            -> BepInEx.Configuration.ConfigFile BepInEx.BaseUnityPlugin::get_Config()
+      ldstr
+            -> General
+      ldstr
+            -> SecondWindowResolution
+      ldc.i4
+            -> 1024
+      ldstr
+            -> Second window dome size (power of two).
+      callvirt
+            -> BepInEx.Configuration.ConfigEntry`1<!!0> BepInEx.Configuration.ConfigFile::Bind<System.Int32>(System.String,System.String,!!0,System.String)
+      stfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Int32> US2Dome.US2Dome::_cfgWindowRes
+      ldarg.0
+      ldarg.0
+      call
+            -> BepInEx.Configuration.ConfigFile BepInEx.BaseUnityPlugin::get_Config()
+      ldstr
+            -> General
+      ldstr
+            -> SecondWindowTopmost
+      ldc.i4.1
+      ldstr
+            -> Keep the dome window above other windows.
+      callvirt
+            -> BepInEx.Configuration.ConfigEntry`1<!!0> BepInEx.Configuration.ConfigFile::Bind<System.Boolean>(System.String,System.String,!!0,System.String)
+      stfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgWindowTopmost
+      ldarg.0
+      ldarg.0
+      call
+            -> BepInEx.Configuration.ConfigFile BepInEx.BaseUnityPlugin::get_Config()
+      ldstr
+            -> General
+      ldstr
+            -> HideOverlayWhenSecondWindowActive
+      ldc.i4.1
+      ldstr
+            -> Automatically hide the small in-game dome preview while the second (planetarium) window is open. Set to false to keep both visible.
+      callvirt
+            -> BepInEx.Configuration.ConfigEntry`1<!!0> BepInEx.Configuration.ConfigFile::Bind<System.Boolean>(System.String,System.String,!!0,System.String)
+      stfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgHideOverlayWhenWin
+      ldarg.0
+      ldc.i4.s
+            -> 64
+      ldarg.0
+      ldfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Int32> US2Dome.US2Dome::_cfgDomeRes
+      callvirt
+            -> !0 BepInEx.Configuration.ConfigEntry`1<System.Int32>::get_Value()
+      call
+            -> System.Int32 UnityEngine.Mathf::NextPowerOfTwo(System.Int32)
+      call
+            -> System.Int32 UnityEngine.Mathf::Max(System.Int32,System.Int32)
+      stfld
+            -> System.Int32 US2Dome.US2Dome::_domeRes
+      ldarg.0
+      ldc.i4.s
+            -> 64
+      ldarg.0
+      ldfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Int32> US2Dome.US2Dome::_cfgFaceRes
+      callvirt
+            -> !0 BepInEx.Configuration.ConfigEntry`1<System.Int32>::get_Value()
+      call
+            -> System.Int32 UnityEngine.Mathf::NextPowerOfTwo(System.Int32)
+      call
+            -> System.Int32 UnityEngine.Mathf::Max(System.Int32,System.Int32)
+      stfld
+            -> System.Int32 US2Dome.US2Dome::_faceRes
+      ldarg.0
+      ldc.i4
+            -> 256
+      ldarg.0
+      ldfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Int32> US2Dome.US2Dome::_cfgWindowRes
+      callvirt
+            -> !0 BepInEx.Configuration.ConfigEntry`1<System.Int32>::get_Value()
+      call
+            -> System.Int32 UnityEngine.Mathf::NextPowerOfTwo(System.Int32)
+      call
+            -> System.Int32 UnityEngine.Mathf::Max(System.Int32,System.Int32)
+      stfld
+            -> System.Int32 US2Dome.US2Dome::_windowRes
+      ldarg.0
+      ldc.i4.s
+            -> 12
+      newarr
+            -> System.Object
+      dup
+      ldc.i4.0
+      ldstr
+            -> [US2Dome] Config bound OK: dome=
+      stelem.ref
+      dup
+      ldc.i4.1
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_domeRes
+      box
+            -> System.Int32
+      stelem.ref
+      dup
+      ldc.i4.2
+      ldstr
+            ->  face=
+      stelem.ref
+      dup
+      ldc.i4.3
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_faceRes
+      box
+            -> System.Int32
+      stelem.ref
+      dup
+      ldc.i4.4
+      ldstr
+            ->  window=
+      stelem.ref
+      dup
+      ldc.i4.5
+      ldarg.0
+      ldfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgWindow
+      callvirt
+            -> !0 BepInEx.Configuration.ConfigEntry`1<System.Boolean>::get_Value()
+      brfalse
+            -> IL_02ba: ldstr "off"
+      ldstr
+            -> on @
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_windowRes
+      box
+            -> System.Int32
+      call
+            -> System.String System.String::Concat(System.Object,System.Object)
+      br
+            -> IL_02bf: stelem.ref
+      ldstr
+            -> off
+      stelem.ref
+      dup
+      ldc.i4.6
+      ldstr
+            ->  overlay=
+      stelem.ref
+      dup
+      ldc.i4.7
+      ldarg.0
+      ldfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgOverlay
+      callvirt
+            -> !0 BepInEx.Configuration.ConfigEntry`1<System.Boolean>::get_Value()
+      box
+            -> System.Boolean
+      stelem.ref
+      dup
+      ldc.i4.8
+      ldstr
+            ->  fullDome=
+      stelem.ref
+      dup
+      ldc.i4.s
+            -> 9
+      ldarg.0
+      ldfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgFullDome
+      callvirt
+            -> !0 BepInEx.Configuration.ConfigEntry`1<System.Boolean>::get_Value()
+      box
+            -> System.Boolean
+      stelem.ref
+      dup
+      ldc.i4.s
+            -> 10
+      ldstr
+            ->  everyN=
+      stelem.ref
+      dup
+      ldc.i4.s
+            -> 11
+      ldarg.0
+      ldfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Int32> US2Dome.US2Dome::_cfgEveryN
+      callvirt
+            -> !0 BepInEx.Configuration.ConfigEntry`1<System.Int32>::get_Value()
+      box
+            -> System.Int32
+      stelem.ref
+      call
+            -> System.String System.String::Concat(System.Object[])
+      call
+            -> System.Void US2Dome.US2Dome::LogInfo(System.String)
+      leave
+            -> IL_033a: ret
+      stloc.1
+      ldarg.0
+      ldstr
+            -> [US2Dome] CONFIG BIND FAILED: 
+      ldloc.1
+      call
+            -> System.String System.String::Concat(System.Object,System.Object)
+      call
+            -> System.Void US2Dome.US2Dome::LogError(System.String)
+      leave
+            -> IL_033a: ret
+      ret
+   method System.Void US2Dome.US2Dome::EnsureInitialized() (IL len 318, maxstack 5)
+   ---- BODY of EnsureInitialized ----
+      ldarg.0
+      ldfld
+            -> System.Boolean US2Dome.US2Dome::_initDone
+      brtrue
+            -> IL_0016: ret
+      ldarg.0
+      ldfld
+            -> System.Boolean US2Dome.US2Dome::_initFailed
+      brfalse
+            -> IL_0017: ldarg.0
+      ret
+      ldarg.0
+      ldfld
+            -> UnityEngine.GameObject US2Dome.US2Dome::_holder
+      ldnull
+      call
+            -> System.Boolean UnityEngine.Object::op_Equality(UnityEngine.Object,UnityEngine.Object)
+      brfalse
+            -> IL_0043: ldc.i4.0
+      ldarg.0
+      ldstr
+            -> [US2Dome] Capture
+      newobj
+            -> System.Void UnityEngine.GameObject::.ctor(System.String)
+      stfld
+            -> UnityEngine.GameObject US2Dome.US2Dome::_holder
+      ldarg.0
+      ldfld
+            -> UnityEngine.GameObject US2Dome.US2Dome::_holder
+      call
+            -> System.Void UnityEngine.Object::DontDestroyOnLoad(UnityEngine.Object)
+      ldc.i4.0
+      stloc.0
+      br
+            -> IL_015b: ldloc.0
+      ldarg.0
+      ldfld
+            -> UnityEngine.Camera[] US2Dome.US2Dome::_faceCams
+      ldloc.0
+      ldelem.ref
+      ldnull
+      call
+            -> System.Boolean UnityEngine.Object::op_Inequality(UnityEngine.Object,UnityEngine.Object)
+      brtrue
+            -> IL_0070: leave IL_0157
+      ldarg.0
+      ldfld
+            -> UnityEngine.RenderTexture[] US2Dome.US2Dome::_faceRTs
+      ldloc.0
+      ldelem.ref
+      ldnull
+      call
+            -> System.Boolean UnityEngine.Object::op_Inequality(UnityEngine.Object,UnityEngine.Object)
+      brfalse
+            -> IL_0075: ldstr "[US2Dome] Face"
+      leave
+            -> IL_0157: ldloc.0
+      ldstr
+            -> [US2Dome] Face
+      ldloc.0
+      box
+            -> System.Int32
+      call
+            -> System.String System.String::Concat(System.Object,System.Object)
+      newobj
+            -> System.Void UnityEngine.GameObject::.ctor(System.String)
+      stloc.1
+      ldloc.1
+      call
+            -> System.Void UnityEngine.Object::DontDestroyOnLoad(UnityEngine.Object)
+      ldloc.1
+      callvirt
+            -> !!0 UnityEngine.GameObject::AddComponent<UnityEngine.Camera>()
+      stloc.2
+      ldloc.2
+      ldc.i4.0
+      callvirt
+            -> System.Void UnityEngine.Behaviour::set_enabled(System.Boolean)
+      ldloc.2
+      ldc.i4.1
+      callvirt
+            -> System.Void UnityEngine.Camera::set_clearFlags(UnityEngine.CameraClearFlags)
+      ldloc.2
+      call
+            -> UnityEngine.Color UnityEngine.Color::get_black()
+      callvirt
+            -> System.Void UnityEngine.Camera::set_backgroundColor(UnityEngine.Color)
+      ldloc.2
+      ldc.r4
+            -> 90
+      callvirt
+            -> System.Void UnityEngine.Camera::set_fieldOfView(System.Single)
+      ldloc.2
+      ldc.r4
+            -> 1
+      callvirt
+            -> System.Void UnityEngine.Camera::set_aspect(System.Single)
+      ldloc.2
+      ldc.r4
+            -> 0.1
+      callvirt
+            -> System.Void UnityEngine.Camera::set_nearClipPlane(System.Single)
+      ldloc.2
+      ldc.r4
+            -> 1E+09
+      callvirt
+            -> System.Void UnityEngine.Camera::set_farClipPlane(System.Single)
+      ldloc.2
+      ldc.i4.0
+      callvirt
+            -> System.Void UnityEngine.Camera::set_allowHDR(System.Boolean)
+      ldloc.2
+      ldc.i4.0
+      callvirt
+            -> System.Void UnityEngine.Camera::set_allowMSAA(System.Boolean)
+      ldloc.2
+      ldc.i4.m1
+      callvirt
+            -> System.Void UnityEngine.Camera::set_cullingMask(System.Int32)
+      ldloc.2
+      ldc.i4.s
+            -> 50
+      ldloc.0
+      add
+      conv.r4
+      callvirt
+            -> System.Void UnityEngine.Camera::set_depth(System.Single)
+      ldarg.0
+      ldfld
+            -> UnityEngine.Camera[] US2Dome.US2Dome::_faceCams
+      ldloc.0
+      ldloc.2
+      stelem.ref
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_faceRes
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_faceRes
+      ldc.i4.s
+            -> 24
+      ldc.i4.0
+      newobj
+            -> System.Void UnityEngine.RenderTexture::.ctor(System.Int32,System.Int32,System.Int32,UnityEngine.RenderTextureFormat)
+      stloc.3
+      ldloc.3
+      callvirt
+            -> System.Boolean UnityEngine.RenderTexture::Create()
+      brtrue
+            -> IL_0147: ldloc.2
+      ldarg.0
+      ldstr
+            -> [US2Dome] RenderTexture.Create failed for face 
+      ldloc.0
+      box
+            -> System.Int32
+      call
+            -> System.String System.String::Concat(System.Object,System.Object)
+      call
+            -> System.Void US2Dome.US2Dome::LogError(System.String)
+      ldloc.3
+      call
+            -> System.Void UnityEngine.Object::Destroy(UnityEngine.Object)
+      leave
+            -> IL_0157: ldloc.0
+      ldloc.2
+      ldloc.3
+      callvirt
+            -> System.Void UnityEngine.Camera::set_targetTexture(UnityEngine.RenderTexture)
+      ldarg.0
+      ldfld
+            -> UnityEngine.RenderTexture[] US2Dome.US2Dome::_faceRTs
+      ldloc.0
+      ldloc.3
+      stelem.ref
+      ldloc.0
+      ldc.i4.1
+      add
+      stloc.0
+      ldloc.0
+      ldc.i4.5
+      blt
+            -> IL_004a: ldarg.0
+      ldarg.0
+      ldfld
+            -> UnityEngine.Texture2D US2Dome.US2Dome::_domeTex
+      ldnull
+      call
+            -> System.Boolean UnityEngine.Object::op_Equality(UnityEngine.Object,UnityEngine.Object)
+      brfalse
+            -> IL_023d: ldarg.0
+      ldarg.0
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_domeRes
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_domeRes
+      ldc.i4.4
+      ldc.i4.0
+      newobj
+            -> System.Void UnityEngine.Texture2D::.ctor(System.Int32,System.Int32,UnityEngine.TextureFormat,System.Boolean)
+      stfld
+            -> UnityEngine.Texture2D US2Dome.US2Dome::_domeTex
+      ldarg.0
+      ldfld
+            -> UnityEngine.Texture2D US2Dome.US2Dome::_domeTex
+      ldc.i4.1
+      callvirt
+            -> System.Void UnityEngine.Texture::set_filterMode(UnityEngine.FilterMode)
+      ldarg.0
+      ldfld
+            -> UnityEngine.Texture2D US2Dome.US2Dome::_domeTex
+      ldc.i4.1
+      callvirt
+            -> System.Void UnityEngine.Texture::set_wrapMode(UnityEngine.TextureWrapMode)
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_domeRes
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_domeRes
+      mul
+      stloc.s
+            -> V_4
+      ldarg.0
+      ldloc.s
+            -> V_4
+      ldc.i4.4
+      mul
+      newarr
+            -> System.Byte
+      stfld
+            -> System.Byte[] US2Dome.US2Dome::_domeBytes
+      ldc.i4.0
+      stloc.s
+            -> V_5
+      br
+            -> IL_020a: ldloc.s V_5
+      ldarg.0
+      ldfld
+            -> System.Byte[] US2Dome.US2Dome::_domeBytes
+      ldloc.s
+            -> V_5
+      ldc.i4.4
+      mul
+      ldc.i4.0
+      stelem.i1
+      ldarg.0
+      ldfld
+            -> System.Byte[] US2Dome.US2Dome::_domeBytes
+      ldloc.s
+            -> V_5
+      ldc.i4.4
+      mul
+      ldc.i4.1
+      add
+      ldc.i4.0
+      stelem.i1
+      ldarg.0
+      ldfld
+            -> System.Byte[] US2Dome.US2Dome::_domeBytes
+      ldloc.s
+            -> V_5
+      ldc.i4.4
+      mul
+      ldc.i4.2
+      add
+      ldc.i4.0
+      stelem.i1
+      ldarg.0
+      ldfld
+            -> System.Byte[] US2Dome.US2Dome::_domeBytes
+      ldloc.s
+            -> V_5
+      ldc.i4.4
+      mul
+      ldc.i4.3
+      add
+      ldc.i4
+            -> 255
+      stelem.i1
+      ldloc.s
+            -> V_5
+      ldc.i4.1
+      add
+      stloc.s
+            -> V_5
+      ldloc.s
+            -> V_5
+      ldloc.s
+            -> V_4
+      blt
+            -> IL_01ca: ldarg.0
+      ldarg.0
+      ldloc.s
+            -> V_4
+      newarr
+            -> UnityEngine.Color32
+      stfld
+            -> UnityEngine.Color32[] US2Dome.US2Dome::_domeC32
+      ldarg.0
+      ldfld
+            -> UnityEngine.Texture2D US2Dome.US2Dome::_domeTex
+      ldarg.0
+      ldfld
+            -> UnityEngine.Color32[] US2Dome.US2Dome::_domeC32
+      callvirt
+            -> System.Void UnityEngine.Texture2D::SetPixels32(UnityEngine.Color32[])
+      ldarg.0
+      ldfld
+            -> UnityEngine.Texture2D US2Dome.US2Dome::_domeTex
+      ldc.i4.0
+      callvirt
+            -> System.Void UnityEngine.Texture2D::Apply(System.Boolean)
+      ldarg.0
+      ldfld
+            -> UnityEngine.Texture2D US2Dome.US2Dome::_scratch
+      ldnull
+      call
+            -> System.Boolean UnityEngine.Object::op_Equality(UnityEngine.Object,UnityEngine.Object)
+      brfalse
+            -> IL_0285: ldarg.0
+      ldarg.0
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_faceRes
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_faceRes
+      newobj
+            -> System.Void UnityEngine.Texture2D::.ctor(System.Int32,System.Int32)
+      stfld
+            -> UnityEngine.Texture2D US2Dome.US2Dome::_scratch
+      ldc.i4.5
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_faceRes
+      mul
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_faceRes
+      mul
+      stloc.s
+            -> V_6
+      ldarg.0
+      ldloc.s
+            -> V_6
+      ldc.i4.4
+      mul
+      newarr
+            -> System.Byte
+      stfld
+            -> System.Byte[] US2Dome.US2Dome::_faceBytes
+      ldarg.0
+      ldfld
+            -> US2Dome.DomeWorker US2Dome.US2Dome::_worker
+      brtrue
+            -> IL_02c0: ldarg.0
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_windowRes
+      stloc.s
+            -> V_7
+      ldarg.0
+      ldloc.s
+            -> V_7
+      ldloc.s
+            -> V_7
+      mul
+      ldc.i4.4
+      mul
+      newarr
+            -> System.Byte
+      stfld
+            -> System.Byte[] US2Dome.US2Dome::_winBytes
+      ldarg.0
+      newobj
+            -> System.Void US2Dome.DomeWorker::.ctor()
+      stfld
+            -> US2Dome.DomeWorker US2Dome.US2Dome::_worker
+      ldarg.0
+      ldstr
+            -> [US2Dome] Worker thread started.
+      call
+            -> System.Void US2Dome.US2Dome::LogInfo(System.String)
+      ldarg.0
+      ldc.i4.1
+      stfld
+            -> System.Boolean US2Dome.US2Dome::_initDone
+      ldarg.0
+      ldc.i4.0
+      stfld
+            -> System.Boolean US2Dome.US2Dome::_initFailed
+      ldarg.0
+      ldc.i4.7
+      newarr
+            -> System.Object
+      dup
+      ldc.i4.0
+      ldstr
+            -> [US2Dome] Initialized: 
+      stelem.ref
+      dup
+      ldc.i4.1
+      ldarg.0
+      call
+            -> System.Int32 US2Dome.US2Dome::CountFaceRTs()
+      box
+            -> System.Int32
+      stelem.ref
+      dup
+      ldc.i4.2
+      ldstr
+            -> /5 face RTs, dome=
+      stelem.ref
+      dup
+      ldc.i4.3
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_domeRes
+      box
+            -> System.Int32
+      stelem.ref
+      dup
+      ldc.i4.4
+      ldstr
+            -> px, face=
+      stelem.ref
+      dup
+      ldc.i4.5
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_faceRes
+      box
+            -> System.Int32
+      stelem.ref
+      dup
+      ldc.i4.6
+      ldstr
+            -> px.
+      stelem.ref
+      call
+            -> System.String System.String::Concat(System.Object[])
+      call
+            -> System.Void US2Dome.US2Dome::LogInfo(System.String)
+      leave
+            -> IL_034e: ret
+      stloc.s
+            -> V_8
+      ldarg.0
+      ldc.i4.1
+      stfld
+            -> System.Boolean US2Dome.US2Dome::_initFailed
+      ldarg.0
+      ldstr
+            -> [US2Dome] INIT FAILED (will not retry this session): 
+      ldloc.s
+            -> V_8
+      call
+            -> System.String System.String::Concat(System.Object,System.Object)
+      call
+            -> System.Void US2Dome.US2Dome::LogError(System.String)
+      leave
+            -> IL_034e: ret
+      ret
+   method System.Int32 US2Dome.US2Dome::CountFaceRTs() (IL len 25, maxstack 2)
+   method System.Void US2Dome.US2Dome::Update() (IL len 307, maxstack 8)
+   ---- BODY of Update ----
+      ldarg.0
+      ldfld
+            -> System.Boolean US2Dome.US2Dome::_diagDone
+      brtrue
+            -> IL_00e9: ldarg.0
+      ldarg.0
+      ldc.i4.1
+      stfld
+            -> System.Boolean US2Dome.US2Dome::_diagDone
+      ldarg.0
+      call
+            -> UnityEngine.Camera US2Dome.US2Dome::FindMainCamera()
+      stloc.0
+      ldarg.0
+      ldc.i4.6
+      newarr
+            -> System.Object
+      dup
+      ldc.i4.0
+      ldstr
+            -> [US2Dome] Diagnostics: main camera = 
+      stelem.ref
+      dup
+      ldc.i4.1
+      ldloc.0
+      ldnull
+      call
+            -> System.Boolean UnityEngine.Object::op_Inequality(UnityEngine.Object,UnityEngine.Object)
+      brfalse
+            -> IL_006d: ldstr "<none>"
+      ldc.i4.4
+      newarr
+            -> System.Object
+      dup
+      ldc.i4.0
+      ldloc.0
+      callvirt
+            -> System.String UnityEngine.Object::get_name()
+      stelem.ref
+      dup
+      ldc.i4.1
+      ldstr
+            ->  (depth 
+      stelem.ref
+      dup
+      ldc.i4.2
+      ldloc.0
+      callvirt
+            -> System.Single UnityEngine.Camera::get_depth()
+      box
+            -> System.Single
+      stelem.ref
+      dup
+      ldc.i4.3
+      ldstr
+            -> )
+      stelem.ref
+      call
+            -> System.String System.String::Concat(System.Object[])
+      br
+            -> IL_0072: stelem.ref
+      ldstr
+            -> <none>
+      stelem.ref
+      dup
+      ldc.i4.2
+      ldstr
+            -> , enabled cameras = 
+      stelem.ref
+      dup
+      ldc.i4.3
+      ldarg.0
+      call
+            -> System.Int32 US2Dome.US2Dome::CountEnabledCameras()
+      box
+            -> System.Int32
+      stelem.ref
+      dup
+      ldc.i4.4
+      ldstr
+            -> , init=
+      stelem.ref
+      dup
+      ldc.i4.5
+      ldarg.0
+      ldfld
+            -> System.Boolean US2Dome.US2Dome::_initDone
+      brfalse
+            -> IL_00a8: ldarg.0
+      ldstr
+            -> done
+      br
+            -> IL_00c2: stelem.ref
+      ldarg.0
+      ldfld
+            -> System.Boolean US2Dome.US2Dome::_initFailed
+      brfalse
+            -> IL_00bd: ldstr "pending"
+      ldstr
+            -> FAILED
+      br
+            -> IL_00c2: stelem.ref
+      ldstr
+            -> pending
+      stelem.ref
+      call
+            -> System.String System.String::Concat(System.Object[])
+      call
+            -> System.Void US2Dome.US2Dome::LogInfo(System.String)
+      leave
+            -> IL_00e9: ldarg.0
+      stloc.1
+      ldarg.0
+      ldstr
+            -> [US2Dome] Diagnostics failed: 
+      ldloc.1
+      call
+            -> System.String System.String::Concat(System.Object,System.Object)
+      call
+            -> System.Void US2Dome.US2Dome::LogError(System.String)
+      leave
+            -> IL_00e9: ldarg.0
+      ldarg.0
+      call
+            -> System.Void US2Dome.US2Dome::EnsureInitialized()
+      ldarg.0
+      ldfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgEnabled
+      callvirt
+            -> !0 BepInEx.Configuration.ConfigEntry`1<System.Boolean>::get_Value()
+      brtrue
+            -> IL_013a: ldarg.0
+      ldc.i4.0
+      stloc.2
+      br
+            -> IL_012b: ldloc.2
+      ldarg.0
+      ldfld
+            -> UnityEngine.Camera[] US2Dome.US2Dome::_faceCams
+      ldloc.2
+      ldelem.ref
+      ldnull
+      call
+            -> System.Boolean UnityEngine.Object::op_Inequality(UnityEngine.Object,UnityEngine.Object)
+      brfalse
+            -> IL_0127: ldloc.2
+      ldarg.0
+      ldfld
+            -> UnityEngine.Camera[] US2Dome.US2Dome::_faceCams
+      ldloc.2
+      ldelem.ref
+      ldc.i4.0
+      callvirt
+            -> System.Void UnityEngine.Behaviour::set_enabled(System.Boolean)
+      ldloc.2
+      ldc.i4.1
+      add
+      stloc.2
+      ldloc.2
+      ldc.i4.5
+      blt
+            -> IL_0106: ldarg.0
+      ldarg.0
+      ldc.i4.0
+      stfld
+            -> System.Boolean US2Dome.US2Dome::_willCapture
+      ret
+      ldarg.0
+      call
+            -> UnityEngine.Camera US2Dome.US2Dome::FindMainCamera()
+      stloc.3
+      ldloc.3
+      ldnull
+      call
+            -> System.Boolean UnityEngine.Object::op_Equality(UnityEngine.Object,UnityEngine.Object)
+      brfalse
+            -> IL_01b5: ldc.i4.1
+      ldc.i4.0
+      stloc.s
+            -> V_4
+      br
+            -> IL_017e: ldloc.s V_4
+      ldarg.0
+      ldfld
+            -> UnityEngine.Camera[] US2Dome.US2Dome::_faceCams
+      ldloc.s
+            -> V_4
+      ldelem.ref
+      ldnull
+      call
+            -> System.Boolean UnityEngine.Object::op_Inequality(UnityEngine.Object,UnityEngine.Object)
+      brfalse
+            -> IL_0178: ldloc.s V_4
+      ldarg.0
+      ldfld
+            -> UnityEngine.Camera[] US2Dome.US2Dome::_faceCams
+      ldloc.s
+            -> V_4
+      ldelem.ref
+      ldc.i4.0
+      callvirt
+            -> System.Void UnityEngine.Behaviour::set_enabled(System.Boolean)
+      ldloc.s
+            -> V_4
+      ldc.i4.1
+      add
+      stloc.s
+            -> V_4
+      ldloc.s
+            -> V_4
+      ldc.i4.5
+      blt
+            -> IL_0155: ldarg.0
+      ldarg.0
+      ldc.i4.0
+      stfld
+            -> System.Boolean US2Dome.US2Dome::_willCapture
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_frame
+      ldc.i4.s
+            -> 60
+      rem
+      brtrue
+            -> IL_01a6: ldarg.0
+      ldarg.0
+      ldstr
+            -> [US2Dome] No main camera found; skipping capture.
+      call
+            -> System.Void US2Dome.US2Dome::LogWarn(System.String)
+      ldarg.0
+      dup
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_frame
+      ldc.i4.1
+      add
+      stfld
+            -> System.Int32 US2Dome.US2Dome::_frame
+      ret
+      ldc.i4.1
+      ldarg.0
+      ldfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Int32> US2Dome.US2Dome::_cfgEveryN
+      callvirt
+            -> !0 BepInEx.Configuration.ConfigEntry`1<System.Int32>::get_Value()
+      call
+            -> System.Int32 UnityEngine.Mathf::Max(System.Int32,System.Int32)
+      stloc.s
+            -> V_5
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_frame
+      ldloc.s
+            -> V_5
+      rem
+      ldc.i4.0
+      ceq
+      stloc.s
+            -> V_6
+      ldarg.0
+      dup
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_frame
+      ldc.i4.1
+      add
+      stfld
+            -> System.Int32 US2Dome.US2Dome::_frame
+      ldloc.s
+            -> V_6
+      brtrue
+            -> IL_022c: ldloc.3
+      ldc.i4.0
+      stloc.s
+            -> V_7
+      br
+            -> IL_021c: ldloc.s V_7
+      ldarg.0
+      ldfld
+            -> UnityEngine.Camera[] US2Dome.US2Dome::_faceCams
+      ldloc.s
+            -> V_7
+      ldelem.ref
+      ldnull
+      call
+            -> System.Boolean UnityEngine.Object::op_Inequality(UnityEngine.Object,UnityEngine.Object)
+      brfalse
+            -> IL_0216: ldloc.s V_7
+      ldarg.0
+      ldfld
+            -> UnityEngine.Camera[] US2Dome.US2Dome::_faceCams
+      ldloc.s
+            -> V_7
+      ldelem.ref
+      ldc.i4.0
+      callvirt
+            -> System.Void UnityEngine.Behaviour::set_enabled(System.Boolean)
+      ldloc.s
+            -> V_7
+      ldc.i4.1
+      add
+      stloc.s
+            -> V_7
+      ldloc.s
+            -> V_7
+      ldc.i4.5
+      blt
+            -> IL_01f3: ldarg.0
+      ldarg.0
+      ldc.i4.0
+      stfld
+            -> System.Boolean US2Dome.US2Dome::_willCapture
+      ret
+      ldloc.3
+      callvirt
+            -> UnityEngine.Transform UnityEngine.Component::get_transform()
+      callvirt
+            -> UnityEngine.Vector3 UnityEngine.Transform::get_position()
+      stloc.s
+            -> V_8
+      ldloc.3
+      callvirt
+            -> UnityEngine.Transform UnityEngine.Component::get_transform()
+      callvirt
+            -> UnityEngine.Quaternion UnityEngine.Transform::get_rotation()
+      stloc.s
+            -> V_9
+      ldloc.3
+      callvirt
+            -> UnityEngine.CameraClearFlags UnityEngine.Camera::get_clearFlags()
+      stloc.s
+            -> V_10
+      ldloc.3
+      callvirt
+            -> UnityEngine.Color UnityEngine.Camera::get_backgroundColor()
+      stloc.s
+            -> V_11
+      ldc.i4.0
+      stloc.s
+            -> V_12
+      br
+            -> IL_032f: ldloc.s V_12
+      ldarg.0
+      ldfld
+            -> UnityEngine.Camera[] US2Dome.US2Dome::_faceCams
+      ldloc.s
+            -> V_12
+      ldelem.ref
+      ldnull
+      call
+            -> System.Boolean UnityEngine.Object::op_Equality(UnityEngine.Object,UnityEngine.Object)
+      brtrue
+            -> IL_0286: br IL_0329
+      ldarg.0
+      ldfld
+            -> UnityEngine.RenderTexture[] US2Dome.US2Dome::_faceRTs
+      ldloc.s
+            -> V_12
+      ldelem.ref
+      ldnull
+      call
+            -> System.Boolean UnityEngine.Object::op_Equality(UnityEngine.Object,UnityEngine.Object)
+      brfalse
+            -> IL_028b: ldloc.s V_9
+      br
+            -> IL_0329: ldloc.s V_12
+      ldloc.s
+            -> V_9
+      ldsfld
+            -> US2Dome.V3[] US2Dome.DomeMath::Fwd
+      ldloc.s
+            -> V_12
+      ldelema
+            -> US2Dome.V3
+      ldobj
+            -> US2Dome.V3
+      call
+            -> UnityEngine.Vector3 US2Dome.US2Dome::ToVector3(US2Dome.V3)
+      call
+            -> UnityEngine.Vector3 UnityEngine.Quaternion::op_Multiply(UnityEngine.Quaternion,UnityEngine.Vector3)
+      stloc.s
+            -> V_13
+      ldloc.s
+            -> V_9
+      ldsfld
+            -> US2Dome.V3[] US2Dome.DomeMath::Up
+      ldloc.s
+            -> V_12
+      ldelema
+            -> US2Dome.V3
+      ldobj
+            -> US2Dome.V3
+      call
+            -> UnityEngine.Vector3 US2Dome.US2Dome::ToVector3(US2Dome.V3)
+      call
+            -> UnityEngine.Vector3 UnityEngine.Quaternion::op_Multiply(UnityEngine.Quaternion,UnityEngine.Vector3)
+      stloc.s
+            -> V_14
+      ldarg.0
+      ldfld
+            -> UnityEngine.Camera[] US2Dome.US2Dome::_faceCams
+      ldloc.s
+            -> V_12
+      ldelem.ref
+      callvirt
+            -> UnityEngine.Transform UnityEngine.Component::get_transform()
+      ldloc.s
+            -> V_8
+      callvirt
+            -> System.Void UnityEngine.Transform::set_position(UnityEngine.Vector3)
+      ldarg.0
+      ldfld
+            -> UnityEngine.Camera[] US2Dome.US2Dome::_faceCams
+      ldloc.s
+            -> V_12
+      ldelem.ref
+      callvirt
+            -> UnityEngine.Transform UnityEngine.Component::get_transform()
+      ldloc.s
+            -> V_13
+      ldloc.s
+            -> V_14
+      call
+            -> UnityEngine.Quaternion UnityEngine.Quaternion::LookRotation(UnityEngine.Vector3,UnityEngine.Vector3)
+      callvirt
+            -> System.Void UnityEngine.Transform::set_rotation(UnityEngine.Quaternion)
+      ldarg.0
+      ldfld
+            -> UnityEngine.Camera[] US2Dome.US2Dome::_faceCams
+      ldloc.s
+            -> V_12
+      ldelem.ref
+      ldloc.s
+            -> V_10
+      callvirt
+            -> System.Void UnityEngine.Camera::set_clearFlags(UnityEngine.CameraClearFlags)
+      ldarg.0
+      ldfld
+            -> UnityEngine.Camera[] US2Dome.US2Dome::_faceCams
+      ldloc.s
+            -> V_12
+      ldelem.ref
+      ldloc.s
+            -> V_11
+      callvirt
+            -> System.Void UnityEngine.Camera::set_backgroundColor(UnityEngine.Color)
+      ldarg.0
+      ldfld
+            -> UnityEngine.Camera[] US2Dome.US2Dome::_faceCams
+      ldloc.s
+            -> V_12
+      ldelem.ref
+      ldc.i4.1
+      callvirt
+            -> System.Void UnityEngine.Behaviour::set_enabled(System.Boolean)
+      ldloc.s
+            -> V_12
+      ldc.i4.1
+      add
+      stloc.s
+            -> V_12
+      ldloc.s
+            -> V_12
+      ldc.i4.5
+      blt
+            -> IL_025e: ldarg.0
+      ldarg.0
+      ldc.i4.1
+      stfld
+            -> System.Boolean US2Dome.US2Dome::_willCapture
+      ret
+   method System.Int32 US2Dome.US2Dome::CountEnabledCameras() (IL len 37, maxstack 2)
+   method UnityEngine.Vector3 US2Dome.US2Dome::ToVector3(US2Dome.V3) (IL len 8, maxstack 8)
+   method UnityEngine.Camera US2Dome.US2Dome::FindMainCamera() (IL len 112, maxstack 2)
+   method System.Boolean US2Dome.US2Dome::IsOurs(UnityEngine.Camera) (IL len 21, maxstack 2)
+   method System.Void US2Dome.US2Dome::OnGUI() (IL len 309, maxstack 8)
+   ---- BODY of OnGUI ----
+      ldarg.0
+      ldfld
+            -> System.Boolean US2Dome.US2Dome::_initDone
+      brfalse
+            -> IL_00e6: ldarg.0
+      ldarg.0
+      ldfld
+            -> System.Boolean US2Dome.US2Dome::_willCapture
+      brfalse
+            -> IL_00e6: ldarg.0
+      ldarg.0
+      ldc.i4.0
+      stfld
+            -> System.Boolean US2Dome.US2Dome::_willCapture
+      ldarg.0
+      ldfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgEnabled
+      callvirt
+            -> !0 BepInEx.Configuration.ConfigEntry`1<System.Boolean>::get_Value()
+      brfalse
+            -> IL_00e6: ldarg.0
+      call
+            -> System.Single UnityEngine.Time::get_realtimeSinceStartup()
+      stloc.0
+      ldarg.0
+      ldfld
+            -> System.Boolean US2Dome.US2Dome::_resultPending
+      brfalse
+            -> IL_0044: ldarg.0
+      ldarg.0
+      call
+            -> System.Void US2Dome.US2Dome::ConsumeWorkerResult()
+      ldarg.0
+      ldfld
+            -> US2Dome.DomeWorker US2Dome.US2Dome::_worker
+      brfalse
+            -> IL_00e6: ldarg.0
+      ldarg.0
+      ldfld
+            -> US2Dome.DomeWorker US2Dome.US2Dome::_worker
+      callvirt
+            -> System.Boolean US2Dome.DomeWorker::get_IsBusy()
+      brtrue
+            -> IL_00e6: ldarg.0
+      ldarg.0
+      call
+            -> System.Void US2Dome.US2Dome::ReadFaces()
+      ldarg.0
+      ldfld
+            -> US2Dome.DomeWorker US2Dome.US2Dome::_worker
+      ldarg.0
+      ldfld
+            -> System.Byte[] US2Dome.US2Dome::_faceBytes
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_faceRes
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_domeRes
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_windowRes
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_windowRes
+      ldarg.0
+      ldfld
+            -> System.Byte[] US2Dome.US2Dome::_domeBytes
+      ldarg.0
+      ldfld
+            -> System.Byte[] US2Dome.US2Dome::_winBytes
+      callvirt
+            -> System.Boolean US2Dome.DomeWorker::Submit(System.Byte[],System.Int32,System.Int32,System.Int32,System.Int32,System.Byte[],System.Byte[])
+      brfalse
+            -> IL_00e6: ldarg.0
+      ldarg.0
+      ldc.i4.1
+      stfld
+            -> System.Boolean US2Dome.US2Dome::_resultPending
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_frame
+      ldc.i4
+            -> 300
+      rem
+      brtrue
+            -> IL_00e6: ldarg.0
+      call
+            -> System.Single UnityEngine.Time::get_realtimeSinceStartup()
+      ldloc.0
+      sub
+      ldc.r4
+            -> 1000
+      mul
+      stloc.1
+      ldarg.0
+      ldstr
+            -> [US2Dome] Capture(readfaces+submit): 
+      ldloca.s
+            -> V_1
+      ldstr
+            -> F1
+      call
+            -> System.String System.Single::ToString(System.String)
+      ldstr
+            ->  ms (worker in flight)
+      call
+            -> System.String System.String::Concat(System.String,System.String,System.String)
+      call
+            -> System.Void US2Dome.US2Dome::LogInfo(System.String)
+      ldarg.0
+      call
+            -> System.Void US2Dome.US2Dome::UpdateSecondWindow()
+      ldarg.0
+      ldfld
+            -> UnityEngine.Texture2D US2Dome.US2Dome::_domeTex
+      ldnull
+      call
+            -> System.Boolean UnityEngine.Object::op_Equality(UnityEngine.Object,UnityEngine.Object)
+      brfalse
+            -> IL_00fe: ldarg.0
+      ret
+      ldarg.0
+      ldfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgFullDome
+      callvirt
+            -> !0 BepInEx.Configuration.ConfigEntry`1<System.Boolean>::get_Value()
+      brfalse
+            -> IL_020a: ldarg.0
+      ldc.r4
+            -> 0
+      ldc.r4
+            -> 0
+      call
+            -> System.Int32 UnityEngine.Screen::get_width()
+      conv.r4
+      call
+            -> System.Int32 UnityEngine.Screen::get_height()
+      conv.r4
+      newobj
+            -> System.Void UnityEngine.Rect::.ctor(System.Single,System.Single,System.Single,System.Single)
+      call
+            -> UnityEngine.Texture2D UnityEngine.Texture2D::get_blackTexture()
+      call
+            -> System.Void UnityEngine.GUI::DrawTexture(UnityEngine.Rect,UnityEngine.Texture)
+      call
+            -> System.Int32 UnityEngine.Screen::get_width()
+      call
+            -> System.Int32 UnityEngine.Screen::get_height()
+      call
+            -> System.Int32 UnityEngine.Mathf::Min(System.Int32,System.Int32)
+      conv.r4
+      stloc.2
+      call
+            -> System.Int32 UnityEngine.Screen::get_width()
+      conv.r4
+      ldloc.2
+      sub
+      ldc.r4
+            -> 0.5
+      mul
+      stloc.3
+      call
+            -> System.Int32 UnityEngine.Screen::get_height()
+      conv.r4
+      ldloc.2
+      sub
+      ldc.r4
+            -> 0.5
+      mul
+      stloc.s
+            -> V_4
+      ldloc.3
+      ldloc.s
+            -> V_4
+      ldloc.2
+      ldloc.2
+      newobj
+            -> System.Void UnityEngine.Rect::.ctor(System.Single,System.Single,System.Single,System.Single)
+      ldarg.0
+      ldfld
+            -> UnityEngine.Texture2D US2Dome.US2Dome::_domeTex
+      call
+            -> System.Void UnityEngine.GUI::DrawTexture(UnityEngine.Rect,UnityEngine.Texture)
+      ldc.r4
+            -> 220
+      stloc.s
+            -> V_5
+      ldloca.s
+            -> V_6
+      call
+            -> System.Int32 UnityEngine.Screen::get_width()
+      conv.r4
+      ldloc.s
+            -> V_5
+      sub
+      ldc.r4
+            -> 0.5
+      mul
+      call
+            -> System.Int32 UnityEngine.Screen::get_height()
+      conv.r4
+      ldc.r4
+            -> 60
+      sub
+      ldloc.s
+            -> V_5
+      ldc.r4
+            -> 36
+      call
+            -> System.Void UnityEngine.Rect::.ctor(System.Single,System.Single,System.Single,System.Single)
+      ldloc.s
+            -> V_6
+      ldstr
+            -> Save PNG
+      ldarg.0
+      call
+            -> UnityEngine.GUIStyle US2Dome.US2Dome::GetFullBtnStyle()
+      call
+            -> System.Boolean UnityEngine.GUI::Button(UnityEngine.Rect,System.String,UnityEngine.GUIStyle)
+      brfalse
+            -> IL_01c9: call System.Single UnityEngine.Time::get_time()
+      ldarg.0
+      ldloc.3
+      ldloc.s
+            -> V_4
+      ldloc.2
+      call
+            -> System.Void US2Dome.US2Dome::SavePng(System.Single,System.Single,System.Single)
+      call
+            -> System.Single UnityEngine.Time::get_time()
+      ldarg.0
+      ldfld
+            -> System.Single US2Dome.US2Dome::_lastSaveTime
+      sub
+      ldc.r4
+            -> 4
+      bge.un
+            -> IL_0209: ret
+      ldloc.3
+      ldloca.s
+            -> V_6
+      call
+            -> System.Single UnityEngine.Rect::get_y()
+      ldc.r4
+            -> 20
+      sub
+      ldloc.2
+      ldc.r4
+            -> 18
+      newobj
+            -> System.Void UnityEngine.Rect::.ctor(System.Single,System.Single,System.Single,System.Single)
+      ldarg.0
+      ldfld
+            -> System.String US2Dome.US2Dome::_lastSaveMsg
+      ldarg.0
+      call
+            -> UnityEngine.GUIStyle US2Dome.US2Dome::GetLabelStyle()
+      call
+            -> System.Void UnityEngine.GUI::Label(UnityEngine.Rect,System.String,UnityEngine.GUIStyle)
+      ret
+      ldarg.0
+      ldfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgHideOverlayWhenWin
+      callvirt
+            -> !0 BepInEx.Configuration.ConfigEntry`1<System.Boolean>::get_Value()
+      brfalse
+            -> IL_0236: ldarg.0
+      ldarg.0
+      ldfld
+            -> US2Dome.DomeWindow US2Dome.US2Dome::_domeWindow
+      brfalse
+            -> IL_0236: ldarg.0
+      ldarg.0
+      ldfld
+            -> US2Dome.DomeWindow US2Dome.US2Dome::_domeWindow
+      callvirt
+            -> System.Boolean US2Dome.DomeWindow::get_Ready()
+      brfalse
+            -> IL_0236: ldarg.0
+      ret
+      ldarg.0
+      ldfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgOverlay
+      callvirt
+            -> !0 BepInEx.Configuration.ConfigEntry`1<System.Boolean>::get_Value()
+      brtrue
+            -> IL_0247: ldarg.0
+      ret
+      ldarg.0
+      ldfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Single> US2Dome.US2Dome::_cfgOverlayScale
+      callvirt
+            -> !0 BepInEx.Configuration.ConfigEntry`1<System.Single>::get_Value()
+      ldc.r4
+            -> 0.05
+      ldc.r4
+            -> 1
+      call
+            -> System.Single UnityEngine.Mathf::Clamp(System.Single,System.Single,System.Single)
+      stloc.s
+            -> V_7
+      call
+            -> System.Int32 UnityEngine.Screen::get_height()
+      conv.r4
+      ldloc.s
+            -> V_7
+      mul
+      stloc.s
+            -> V_8
+      ldarg.0
+      ldfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.String> US2Dome.US2Dome::_cfgOverlayAnchor
+      callvirt
+            -> !0 BepInEx.Configuration.ConfigEntry`1<System.String>::get_Value()
+      stloc.s
+            -> V_11
+      ldloc.s
+            -> V_11
+      ldstr
+            -> TopLeft
+      call
+            -> System.Boolean System.String::op_Equality(System.String,System.String)
+      brfalse
+            -> IL_029f: ldloc.s V_11
+      ldc.r4
+            -> 10
+      stloc.s
+            -> V_9
+      ldc.r4
+            -> 10
+      stloc.s
+            -> V_10
+      br
+            -> IL_031d: ldloc.s V_9
+      ldloc.s
+            -> V_11
+      ldstr
+            -> TopRight
+      call
+            -> System.Boolean System.String::op_Equality(System.String,System.String)
+      brfalse
+            -> IL_02cd: ldloc.s V_11
+      call
+            -> System.Int32 UnityEngine.Screen::get_width()
+      conv.r4
+      ldloc.s
+            -> V_8
+      sub
+      ldc.r4
+            -> 10
+      sub
+      stloc.s
+            -> V_9
+      ldc.r4
+            -> 10
+      stloc.s
+            -> V_10
+      br
+            -> IL_031d: ldloc.s V_9
+      ldloc.s
+            -> V_11
+      ldstr
+            -> BottomLeft
+      call
+            -> System.Boolean System.String::op_Equality(System.String,System.String)
+      brfalse
+            -> IL_02fb: call System.Int32 UnityEngine.Screen::get_width()
+      ldc.r4
+            -> 10
+      stloc.s
+            -> V_9
+      call
+            -> System.Int32 UnityEngine.Screen::get_height()
+      conv.r4
+      ldloc.s
+            -> V_8
+      sub
+      ldc.r4
+            -> 10
+      sub
+      stloc.s
+            -> V_10
+      br
+            -> IL_031d: ldloc.s V_9
+      call
+            -> System.Int32 UnityEngine.Screen::get_width()
+      conv.r4
+      ldloc.s
+            -> V_8
+      sub
+      ldc.r4
+            -> 10
+      sub
+      stloc.s
+            -> V_9
+      call
+            -> System.Int32 UnityEngine.Screen::get_height()
+      conv.r4
+      ldloc.s
+            -> V_8
+      sub
+      ldc.r4
+            -> 10
+      sub
+      stloc.s
+            -> V_10
+      ldloc.s
+            -> V_9
+      ldloc.s
+            -> V_10
+      ldloc.s
+            -> V_8
+      ldloc.s
+            -> V_8
+      newobj
+            -> System.Void UnityEngine.Rect::.ctor(System.Single,System.Single,System.Single,System.Single)
+      ldarg.0
+      ldfld
+            -> UnityEngine.Texture2D US2Dome.US2Dome::_domeTex
+      call
+            -> System.Void UnityEngine.GUI::DrawTexture(UnityEngine.Rect,UnityEngine.Texture)
+      ldloc.s
+            -> V_9
+      ldloc.s
+            -> V_10
+      ldc.r4
+            -> 24
+      sub
+      ldloc.s
+            -> V_8
+      ldc.r4
+            -> 24
+      newobj
+            -> System.Void UnityEngine.Rect::.ctor(System.Single,System.Single,System.Single,System.Single)
+      ldstr
+            -> US2Dome (180 deg equidistant)
+      ldarg.0
+      call
+            -> UnityEngine.GUIStyle US2Dome.US2Dome::GetLabelStyle()
+      call
+            -> System.Void UnityEngine.GUI::Label(UnityEngine.Rect,System.String,UnityEngine.GUIStyle)
+      ldarg.0
+      ldfld
+            -> BepInEx.Configuration.ConfigEntry`1<System.Boolean> US2Dome.US2Dome::_cfgShowSaveButton
+      callvirt
+            -> !0 BepInEx.Configuration.ConfigEntry`1<System.Boolean>::get_Value()
+      brfalse
+            -> IL_03e3: ret
+      ldloc.s
+            -> V_10
+      ldc.r4
+            -> 54
+      sub
+      stloc.s
+            -> V_12
+      ldloc.s
+            -> V_9
+      ldloc.s
+            -> V_12
+      ldloc.s
+            -> V_8
+      ldc.r4
+            -> 26
+      newobj
+            -> System.Void UnityEngine.Rect::.ctor(System.Single,System.Single,System.Single,System.Single)
+      ldstr
+            -> Save PNG
+      ldarg.0
+      call
+            -> UnityEngine.GUIStyle US2Dome.US2Dome::GetBtnStyle()
+      call
+            -> System.Boolean UnityEngine.GUI::Button(UnityEngine.Rect,System.String,UnityEngine.GUIStyle)
+      brfalse
+            -> IL_03a6: call System.Single UnityEngine.Time::get_time()
+      ldarg.0
+      ldloc.s
+            -> V_9
+      ldloc.s
+            -> V_10
+      ldloc.s
+            -> V_8
+      call
+            -> System.Void US2Dome.US2Dome::SavePng(System.Single,System.Single,System.Single)
+      call
+            -> System.Single UnityEngine.Time::get_time()
+      ldarg.0
+      ldfld
+            -> System.Single US2Dome.US2Dome::_lastSaveTime
+      sub
+      ldc.r4
+            -> 4
+      bge.un
+            -> IL_03e3: ret
+      ldloc.s
+            -> V_9
+      ldloc.s
+            -> V_12
+      ldc.r4
+            -> 18
+      sub
+      ldloc.s
+            -> V_8
+      ldc.r4
+            -> 18
+      newobj
+            -> System.Void UnityEngine.Rect::.ctor(System.Single,System.Single,System.Single,System.Single)
+      ldarg.0
+      ldfld
+            -> System.String US2Dome.US2Dome::_lastSaveMsg
+      ldarg.0
+      call
+            -> UnityEngine.GUIStyle US2Dome.US2Dome::GetLabelStyle()
+      call
+            -> System.Void UnityEngine.GUI::Label(UnityEngine.Rect,System.String,UnityEngine.GUIStyle)
+      ret
+   method UnityEngine.GUIStyle US2Dome.US2Dome::GetLabelStyle() (IL len 26, maxstack 5)
+   method UnityEngine.GUIStyle US2Dome.US2Dome::GetBtnStyle() (IL len 19, maxstack 2)
+   method UnityEngine.GUIStyle US2Dome.US2Dome::GetFullBtnStyle() (IL len 37, maxstack 5)
+   method System.Void US2Dome.US2Dome::UpdateSecondWindow() (IL len 124, maxstack 6)
+   method System.Void US2Dome.US2Dome::OnDomeWindowClosed() (IL len 7, maxstack 8)
+   method System.Void US2Dome.US2Dome::ReadFaces() (IL len 67, maxstack 6)
+   ---- BODY of ReadFaces ----
+      ldarg.0
+      ldfld
+            -> System.Int32 US2Dome.US2Dome::_faceRes
+      stloc.0
+      ldloc.0
+      ldloc.0
+      mul
+      stloc.1
+      ldc.i4.0
+      stloc.2
+      br
+            -> IL_0089: ldloc.2
+      ldarg.0
+      ldfld
+            -> UnityEngine.RenderTexture[] US2Dome.US2Dome::_faceRTs
+      ldloc.2
+      ldelem.ref
+      ldnull
+      call
+            -> System.Boolean UnityEngine.Object::op_Equality(UnityEngine.Object,UnityEngine.Object)
+      brfalse
+            -> IL_002a: ldarg.0
+      br
+            -> IL_0085: ldloc.2
+      ldarg.0
+      ldfld
+            -> UnityEngine.RenderTexture[] US2Dome.US2Dome::_faceRTs
+      ldloc.2
+      ldelem.ref
+      call
+            -> System.Void UnityEngine.RenderTexture::set_active(UnityEngine.RenderTexture)
+      ldarg.0
+      ldfld
+            -> UnityEngine.Texture2D US2Dome.US2Dome::_scratch
+      ldc.r4
+            -> 0
+      ldc.r4
+            -> 0
+      ldloc.0
+      conv.r4
+      ldloc.0
+      conv.r4
+      newobj
+            -> System.Void UnityEngine.Rect::.ctor(System.Single,System.Single,System.Single,System.Single)
+      ldc.i4.0
+      ldc.i4.0
+      ldc.i4.0
+      callvirt
+            -> System.Void UnityEngine.Texture2D::ReadPixels(UnityEngine.Rect,System.Int32,System.Int32,System.Boolean)
+      ldarg.0
+      ldfld
+            -> UnityEngine.Texture2D US2Dome.US2Dome::_scratch
+      ldc.i4.0
+      callvirt
+            -> System.Void UnityEngine.Texture2D::Apply(System.Boolean)
+      ldarg.0
+      ldfld
+            -> UnityEngine.Texture2D US2Dome.US2Dome::_scratch
+      callvirt
+            -> UnityEngine.Color32[] UnityEngine.Texture2D::GetPixels32()
+      stloc.3
+      ldloc.3
+      ldc.i4.0
+      ldarg.0
+      ldfld
+            -> System.Byte[] US2Dome.US2Dome::_faceBytes
+      ldloc.2
+      ldloc.1
+      mul
+      ldc.i4.4
+      mul
+      ldloc.1
+      ldc.i4.4
+      mul
+      call
+            -> System.Void System.Buffer::BlockCopy(System.Array,System.Int32,System.Array,System.Int32,System.Int32)
+      ldloc.2
+      ldc.i4.1
+      add
+      stloc.2
+      ldloc.2
+      ldc.i4.5
+      blt
+            -> IL_0012: ldarg.0
+      ldnull
+      call
+            -> System.Void UnityEngine.RenderTexture::set_active(UnityEngine.RenderTexture)
+      ret
+   method System.Void US2Dome.US2Dome::ConsumeWorkerResult() (IL len 48, maxstack 5)
+   ---- BODY of ConsumeWorkerResult ----
+      ldarg.0
+      ldfld
+            -> US2Dome.DomeWorker US2Dome.US2Dome::_worker
+      brtrue
+            -> IL_0013: ldarg.0
+      ldarg.0
+      ldc.i4.0
+      stfld
+            -> System.Boolean US2Dome.US2Dome::_resultPending
+      ret
+      ldarg.0
+      ldfld
+            -> US2Dome.DomeWorker US2Dome.US2Dome::_worker
+      callvirt
+            -> System.Boolean US2Dome.DomeWorker::TryGetResult()
+      brtrue
+            -> IL_0024: ldarg.0
+      ret
+      ldarg.0
+      ldc.i4.0
+      stfld
+            -> System.Boolean US2Dome.US2Dome::_resultPending
+      ldarg.0
+      ldfld
+            -> System.Byte[] US2Dome.US2Dome::_domeBytes
+      ldc.i4.0
+      ldarg.0
+      ldfld
+            -> UnityEngine.Color32[] US2Dome.US2Dome::_domeC32
+      ldc.i4.0
+      ldarg.0
+      ldfld
+            -> System.Byte[] US2Dome.US2Dome::_domeBytes
+      ldlen
+      conv.i4
+      call
+            -> System.Void System.Buffer::BlockCopy(System.Array,System.Int32,System.Array,System.Int32,System.Int32)
+      ldarg.0
+      ldfld
+            -> UnityEngine.Texture2D US2Dome.US2Dome::_domeTex
+      ldarg.0
+      ldfld
+            -> UnityEngine.Color32[] US2Dome.US2Dome::_domeC32
+      callvirt
+            -> System.Void UnityEngine.Texture2D::SetPixels32(UnityEngine.Color32[])
+      ldarg.0
+      ldfld
+            -> UnityEngine.Texture2D US2Dome.US2Dome::_domeTex
+      ldc.i4.0
+      callvirt
+            -> System.Void UnityEngine.Texture2D::Apply(System.Boolean)
+      ldarg.0
+      ldfld
+            -> US2Dome.DomeWindow US2Dome.US2Dome::_domeWindow
+      brfalse
+            -> IL_008f: ret
+      ldarg.0
+      ldfld
+            -> US2Dome.DomeWindow US2Dome.US2Dome::_domeWindow
+      callvirt
+            -> System.Boolean US2Dome.DomeWindow::get_Ready()
+      brfalse
+            -> IL_008f: ret
+      ldarg.0
+      ldfld
+            -> US2Dome.DomeWindow US2Dome.US2Dome::_domeWindow
+      ldarg.0
+      ldfld
+            -> System.Byte[] US2Dome.US2Dome::_winBytes
+      callvirt
+            -> System.Void US2Dome.DomeWindow::PushBytes(System.Byte[])
+      ret
+   method System.Void US2Dome.US2Dome::SavePng(System.Single,System.Single,System.Single) (IL len 84, maxstack 6)
+   method System.Void US2Dome.US2Dome::OnDestroy() (IL len 61, maxstack 3)
