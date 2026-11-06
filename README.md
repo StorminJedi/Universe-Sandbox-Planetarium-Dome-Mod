@@ -154,7 +154,7 @@ far from the viewer the dome windows are placed.
 | `ObjectView` | the 3D view: `SeparateView`, `ShowSeparateView`, `ViewName`, position/size, `UseGameTexture`, `FlipVertical` |
 | `DataView` | the Data Views window: `ShowDataView`, `WindowPath`, position/size, `FlipVertical` |
 | `Logging` | `MakeLogFile` (default `false`) |
-| `Diagnostics` | `DumpKey` (F3), `HoverKey` (F4), `ScreenshotKey` (F5) |
+| `Diagnostics` | `DumpKey` (F3), `FrameTimeLogger` (Shift + F3) `HoverKey` (F4), `ScreenshotKey` (F5) |
 
 `SeparateView = true` with `ShowSeparateView = true` gives the 3D view its own window. With `ShowSeparateView = false` it
 is removed. With `SeparateView = false` it stays in the properties window.
@@ -199,6 +199,6 @@ own render texture) and painted into each face texture after the face camera fin
 | `src/DomeGpu.cs`, `src/DomeMath.cs` | five-face to dome warp (GPU) and the math behind it |
 | `src/DomeWindow.cs`, `src/WindowPos.cs` | the second OS window and its remembered position |
 | `src/InputBlocker.cs` | hides menu clicks and keys from the game |
-| `src/UiDiag.cs` | F3 / F4 / F5 diagnostics |
+| `src/UiDiag.cs` | F3 / Shift+F3 / F4 / F5 diagnostics |
 | `build.sh` | build script (mono `mcs`) |
 
