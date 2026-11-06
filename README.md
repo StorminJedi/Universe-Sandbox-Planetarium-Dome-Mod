@@ -29,6 +29,10 @@ planet labels at positions you choose on the dome, so they stay readable on the 
 - Optional **mini-view**: a small copy of the dome on the game screen, with adjustable size and position. It works with or
   without the second window.
 - Optional full-dome mode (the dome fills the game window) with a "Save PNG" button.
+- **Smooth window updates**: finished dome frames go through a small queue and are shown one per game frame, so the dome
+  does not move in lumps when the GPU delivers frames unevenly (for example while a properties window with a 3D view is open).
+- **Frame-time recorder** (**Shift+F3**): records every frame for a few seconds and writes a report that shows where the
+  time goes (see *Frame-time recorder* below).
 - Optional log file (off by default).
 
 ## Requirements
@@ -86,7 +90,7 @@ mcs -target:library -out:bin/US2Dome.dll \
   -r:refs/UnityEngine.TextRenderingModule.dll \
   -r:refs/UnityEngine.dll \
   src/DomeMath.cs src/DomeGpu.cs src/DomeWindow.cs src/US2Dome.cs src/US2DomeSettings.cs \
-  src/InputBlocker.cs src/UiDiag.cs src/Nameplates.cs src/WindowPos.cs src/WindowMirror.cs
+  src/InputBlocker.cs src/UiDiag.cs src/Nameplates.cs src/WindowPos.cs src/WindowMirror.cs src/FrameDebug.cs
 ```
 
 Or run `./build.sh`, which refreshes `refs/` from a sibling `Universe_Sandbox_2/` game folder if there is one, compiles,
@@ -135,6 +139,33 @@ depend on the second window. Settings: size (fraction of the screen height), lef
 Planet and object labels are redrawn on the dome. Size, X/Y offset and distance are adjustable. Distance also sets how
 far from the viewer the dome windows are placed.
 
+### Frame-time recorder
+Press **Shift+F3** in the game window to record frame times. A note at the top of the game window counts down while it records
+(10 seconds by default), then the report is written to:
+
+```
+<game folder>\BepInEx\US2Dome_frametimes_<date>_<time>.txt
+```
+
+This works whether or not **Make log file** is on, and nothing is written to disk while recording, so the recorder does
+not disturb the timings it measures. Plain **F3** (UI snapshot) is not triggered by Shift+F3.
+
+The report contains:
+
+- **Header**: GPU, CPU, Unity version, game window, vsync, dome and window settings.
+- **Summary**: average / 1%-low / worst frame times, GC frames, how often the dome window was updated, readback latency, and
+  the cost of each part of the plugin (dome warp, nameplates, window mirror, OnGUI, window blit, readback copy). If the game
+  build has Frame Timing Stats enabled it also shows the engine's main-thread, render-thread and GPU times (otherwise -1).
+- **Where the frame goes**: average ms per frame in *pre-render* (scripts and simulation), the *dome face cameras*, the game's
+  own screen camera, other render-texture cameras (such as the 3D object view), gaps inside the render loop, and
+  *post-render* (OnGUI, present, waiting). A table lists every camera with its renders per frame and its average and worst cost.
+  Phases are measured from the plugin's `Update()` call.
+- **0.5 s bins**: FPS and window updates per half second, which makes slow oscillations ("rubber-banding") easy to see.
+- **Per-frame table**: one row per frame with every value above, for finding the slow frames.
+
+Tips for useful recordings: record the same scene with the dome renderer off (F2 menu) and on, then with and without the
+second window and the properties window open, and compare the averages.
+
 ### Dome window
 - Move and resize it like any window. Drag it to the projector's screen and press **F11** (or double-click) for fullscreen.
 - The position is remembered between runs.
@@ -150,11 +181,15 @@ far from the viewer the dome windows are placed.
 | `Quality` | `FaceMipmaps`, `FaceMSAA`, `FaceShadows`, `FacePostProcessing` |
 | `Controls` | `SettingsHotkey` (default `F2`) |
 | `Nameplates` | `ShowLabels`, `LabelSize`, `LabelOffsetX`, `LabelOffsetY`, `LabelDistance` |
-| `Window` | the properties window: `ShowWindow`, `WindowPath`, `AngleFromCenter`, `Direction`, `SizeDegrees`, `FlipVertical` |
+| `Window` | the properties window: `ShowWindow`, `WindowPath`, `AngleFromCenter`, `Direction`, `SizeDegrees`, `FlipVertical`; also `SmoothUpdates` (default `true`, see below) |
 | `ObjectView` | the 3D view: `SeparateView`, `ShowSeparateView`, `ViewName`, position/size, `UseGameTexture`, `FlipVertical` |
 | `DataView` | the Data Views window: `ShowDataView`, `WindowPath`, position/size, `FlipVertical` |
 | `Logging` | `MakeLogFile` (default `false`) |
-| `Diagnostics` | `DumpKey` (F3), `FrameTimeLogger` (Shift + F3) `HoverKey` (F4), `ScreenshotKey` (F5) |
+| `Diagnostics` | `DumpKey` (F3), `FrameTimeKey` (F3, always used together with Shift), `FrameTimeSeconds` (10, range 1-60), `HoverKey` (F4), `ScreenshotKey` (F5) |
+
+`Window/SmoothUpdates = true` keeps finished dome frames in a three-frame queue and shows exactly one per game frame. It adds
+about one game frame of latency and one extra 5.7 MB copy per frame at the default resolution. Set it to `false` for the
+lowest possible latency. It is ignored (frames are shown immediately) when `CaptureEveryNFrames` is above 1.
 
 `SeparateView = true` with `ShowSeparateView = true` gives the 3D view its own window. With `ShowSeparateView = false` it
 is removed. With `SeparateView = false` it stays in the properties window.
@@ -169,13 +204,22 @@ is removed. With `SeparateView = false` it stays in the properties window.
 - **A window is upside-down:** toggle its **Flip vertically** setting.
 - **Windows missing from the dome:** with the log on, look for `windows painted on top into face N`. If it never
   appears, send the log along with a description of the problem.
-- **Low FPS:** raise `CaptureEveryNFrames` to 2-4, or lower face and dome resolution (Apply afterwards).
+- **Low FPS:** the dome renders the scene five more times per frame, which is mostly CPU work, so a slow CPU is the usual
+  limit. Record the frame times with **Shift+F3** to see where the time goes. In one test on a 2.1 GHz Xeon the dome added
+  about 10 ms per frame (five face cameras about 4 ms, window blit about 3 ms, labels about 1.5 ms, readback copy about
+  1 ms) while the GPU stayed mostly idle. Things that help: lower the dome resolution (Apply afterwards), which makes the
+  window blit and readback copy cheaper; turn labels off. Turning off face shadows and post-processing did not change the CPU
+  cost in that test.
+- **`CaptureEveryNFrames` above 1:** not recommended. In testing it caused periodic freezes of 100-250 ms and was slower
+  overall than capturing every frame.
+- **The dome looks lumpy or "rubber-bandy" while the normal view is smooth:** keep `Window/SmoothUpdates` on (the default).
+  The recorder's 0.5 s bins and the *window updates* line show whether dome updates arrive evenly (one per frame).
 - **Wrong window shown / a window never appears:** the mod finds game windows by scene path
   (`Window/WindowPath`, `DataView/WindowPath`, `ObjectView/ViewName`). If a game update moves them, use the
   diagnostics below to find the new path.
 
 ### Finding another window's path (diagnostics)
-1. Press **F3** (writes a snapshot of the UI to the log; turn on **Make log file** first).
+1. Press **F3** without Shift (writes a snapshot of the UI to the log; turn on **Make log file** first). **Shift+F3** is the frame-time recorder.
 2. Open the window you want in the game, then press **F3** again. The log lists what changed.
 3. Hover the mouse over the window and press **F4** (lists the UI objects under the mouse), then **F5**
    (saves a full screenshot and a cropped one of the window).
@@ -199,6 +243,7 @@ own render texture) and painted into each face texture after the face camera fin
 | `src/DomeGpu.cs`, `src/DomeMath.cs` | five-face to dome warp (GPU) and the math behind it |
 | `src/DomeWindow.cs`, `src/WindowPos.cs` | the second OS window and its remembered position |
 | `src/InputBlocker.cs` | hides menu clicks and keys from the game |
-| `src/UiDiag.cs` | F3 / Shift+F3 / F4 / F5 diagnostics |
+| `src/UiDiag.cs` | F3 / F4 / F5 diagnostics |
+| `src/FrameDebug.cs` | Shift+F3 frame-time recorder and report |
 | `build.sh` | build script (mono `mcs`) |
 
