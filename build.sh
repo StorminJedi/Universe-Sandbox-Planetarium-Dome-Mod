@@ -53,7 +53,7 @@ mcs -target:library -out:bin/US2Dome.dll \
   -r:"$R/UnityEngine.InputLegacyModule.dll" \
   -r:"$R/UnityEngine.TextRenderingModule.dll" \
   -r:"$R/UnityEngine.dll" \
-  src/DomeMath.cs src/DomeGpu.cs src/DomeWindow.cs src/US2Dome.cs src/US2DomeSettings.cs src/InputBlocker.cs src/UiDiag.cs src/Nameplates.cs src/WindowPos.cs src/WindowMirror.cs
+  src/DomeMath.cs src/DomeGpu.cs src/DomeWindow.cs src/US2Dome.cs src/US2DomeSettings.cs src/InputBlocker.cs src/UiDiag.cs src/Nameplates.cs src/WindowPos.cs src/WindowMirror.cs src/FrameDebug.cs
 
 echo "Built: bin/US2Dome.dll"
 
